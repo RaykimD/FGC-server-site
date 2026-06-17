@@ -9,7 +9,7 @@ export default function Home() {
         <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight">
           총겜동 내수서버<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
-            서버 정보 공유 및 강화 시뮬레이터
+            서버 정보 및 강화 시뮬레이터
           </span>
         </h1>
         
