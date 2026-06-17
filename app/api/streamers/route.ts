@@ -22,7 +22,7 @@ export async function GET() {
             { name: "시몽", id: "ximong" }, { name: "구본좌", id: "koo2202" }, { name: "냥쿠미", id: "kumi030a" },
             { name: "오늘님", id: "pqf1234" }, { name: "채하", id: "fbcogk" }, { name: "찌미♥", id: "zzimio3o" },
             { name: "진호.", id: "jangjh5409" }, { name: "땡지+", id: "yyk3390" }, { name: "리브레ㆍ", id: "libre1900" },
-            { name: "감자가비", id: "doki0818" }, { name: "부잉이!", id: "buuuuing" },
+            { name: "감자가비", id: "doki0818" }, { name: "부잉이!", id: "buuuuing" },{ name: "먼지뭉탱이", id: "monmoong" },
             { name: "마리별_", id: "maribyeol" }, { name: "삐요코", id: "nlov555jij" }, { name: "철쑤_", id: "choelssu" },
             { name: "나나문", id: "nanamoon777" }, { name: "연주아", id: "sudal0923" }, { name: "심슨__", id: "dudgns1324" },
             { name: "물초코", id: "moolchoco" }, { name: "와앙이♬", id: "waanwaan" }, { name: "죠아써", id: "jjoasseo13" },
