@@ -4,8 +4,8 @@ import TopBar from '@/components/TopBar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '총겜동 내수서버 정보 사이트',
-  description: '총겜동 내수서버 강화 시뮬레이터',
+  title: '총겜동 내수서버 정보공유 사이트',
+  description: 'Made by. 김쨔',
 };
 
 export default function RootLayout({
