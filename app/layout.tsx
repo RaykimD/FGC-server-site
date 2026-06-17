@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: '총겜동 내수서버 정보공유 사이트',
-  description: 'Made by. 김쨔',
+  description: 'Made by. SOOP 김쨔응',
 };
 
 export default function RootLayout({
