@@ -34,7 +34,27 @@ export default function RootLayout({
           </div>
 
           <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+            {/* 💡 서버 정보 (위로 이동 및 글씨 색상 통일) */}
             <div className="text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-wider mb-3 pl-2">
+              서버 정보
+            </div>
+            <Link href="/streamers" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
+              👥 신청자 명단
+            </Link>
+            <Link href="/status" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
+              📊 길드/직업 현황
+            </Link>
+            <Link href="/report" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
+              📢 정보 공유방
+            </Link>
+
+            {/* 보스타임 (예정) - 비활성화 효과(opacity-60)는 유지하되 기본 색상은 통일 */}
+            <Link href="#" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all cursor-not-allowed opacity-60">
+              👹 보스타임 (예정)
+            </Link>
+
+            {/* 💡 시뮬레이터 (아래로 이동 및 위쪽 여백 mt-8 적용) */}
+            <div className="text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-wider mb-3 mt-8 pl-2">
               시뮬레이터
             </div>
             <Link href="/weapon" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
@@ -51,25 +71,6 @@ export default function RootLayout({
             </Link>
             <Link href="/lightfoot" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
               🏃 경공비급 강화
-            </Link>
-
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-600 uppercase tracking-wider mb-3 mt-8 pl-2">
-              서버 정보
-            </div>
-            <Link href="/streamers" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-              👥 신청자 명단
-            </Link>
-            <Link href="/status" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-              📊 길드/직업 현황
-            </Link>
-
-            <Link href="/report" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
-              📢 정보 공유방
-            </Link>
-
-            {/* 💡 새로 추가된 보스타임 (예정) 메뉴 */}
-            <Link href="#" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-not-allowed opacity-60">
-              👹 보스타임 (예정)
             </Link>
           </nav>
         </aside>
