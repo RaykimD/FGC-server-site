@@ -132,7 +132,7 @@ export default function ReportPage() {
     } catch { alert('서버 통신 에러'); } finally { setIsSubmitting(false); }
   };
 
-  // 💡 버그 제보 제출 함수 (디스코드로 전송)
+  // 💡 버그 제보 제출 함수 (제보 전송)
   const handleBugSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bugTitle || !bugContent) {
@@ -147,9 +147,9 @@ export default function ReportPage() {
       });
       const result = await res.json();
       if (result.success) {
-        alert('버그/건의 제보가 디스코드로 성공적으로 전송되었습니다! 감사합니다.');
+        alert('버그/건의 제보가 성공적으로 전송되었습니다! 감사합니다.');
         setBugTitle(''); setBugContent(''); setShowForm(false);
-      } else { alert('디스코드 전송 실패'); }
+      } else { alert('제보 전송 실패'); }
     } catch { alert('서버 통신 에러'); } finally { setIsBugSubmitting(false); }
   };
 
@@ -257,7 +257,7 @@ export default function ReportPage() {
              </form>
            ) : (
              <form onSubmit={handleBugSubmit} className="space-y-6 animate-fade-in pt-2">
-               {/* 💡 새로운 버그 제보 폼 (디스코드 전송) */}
+               {/* 💡 새로운 버그 제보 폼 (제보 전송) */}
                <div>
                  <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">제보 제목</label>
                  <input type="text" value={bugTitle} onChange={(e) => setBugTitle(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold focus:ring-2 focus:ring-red-500 outline-none" placeholder="예: 무기 강화 시뮬레이터 수치 오류 제보" />
@@ -267,7 +267,7 @@ export default function ReportPage() {
                  <textarea value={bugContent} onChange={(e) => setBugContent(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm min-h-[200px] focus:ring-2 focus:ring-red-500 outline-none" placeholder="어떤 메뉴에서 어떤 오류가 발생했는지, 혹은 어떤 기능이 추가되었으면 좋겠는지 자유롭게 적어주세요!" />
                </div>
                <button type="submit" disabled={isBugSubmitting} className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-black text-lg py-4 rounded-xl transition-all shadow-md shadow-red-500/20">
-                 {isBugSubmitting ? '디스코드로 전송 중...' : '디스코드로 제보하기'}
+                 {isBugSubmitting ? '제보 전송 중...' : '관리자에게 제보하기'}
                </button>
              </form>
            )}
