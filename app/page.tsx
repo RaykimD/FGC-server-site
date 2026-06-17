@@ -19,7 +19,7 @@ export default function Home() {
 
         <div className="p-6 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-gray-800 shadow-sm dark:shadow-none inline-block">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-            빨간약 공개를 막기 위해 스트리머분들께서는 꼭 스트리머모드를 사용해주시기 바랍니다.<br/>스트리머 모드는 우측 상단 버튼으로 끄고 켤 수 있습니다 💡
+            빨간약 정보를 막기 위해 스트리머분들께서는 꼭 스트리머모드를 사용해주시기 바랍니다.<br/>길드/직업 현황에는 장비, 스탯이 기록될 예정이기 때문에 스트리머분들께서는 이용을 삼가주세요.<br/>스트리머 모드는 우측 상단 버튼으로 끄고 켤 수 있습니다 💡
           </p>
         </div>
       </div>
