@@ -55,7 +55,7 @@ export default function StatusPage() {
         <div>
           <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">길드 및 직업 현황</h1>
           <p className="text-sm font-medium text-slate-500 dark:text-gray-400 mt-2">
-            구글 시트와 실시간 연동되어 서버 내 인원 및 장비 현황을 보여줍니다. 카드를 클릭하면 상세 현황을 볼 수 있습니다.
+            구글 시트와 실시간 연동되어 서버 내 인원 및 장비 현황을 보여줍니다. 카드를 클릭하면 상세 현황을 볼 수 있습니다.<br/>해당 페이지에서는 각 길드별 스탯과 현황이 공개되기 때문에 스트리머분들께서는 카드 누르는 것을 삼가주세요.
           </p>
         </div>
       </div>
