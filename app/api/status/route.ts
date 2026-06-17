@@ -6,12 +6,12 @@ export const revalidate = 90;
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
 const GUILDS_INFO = [
-  { id: 'kim', name: '성태 길드', sheetName: '성태길드' },
-  { id: 'kang', name: '만식 길드', sheetName: '만식길드' },
-  { id: 'oah', name: '오아 길드', sheetName: '오아길드' },
-  { id: 'supi', name: '수피 길드', sheetName: '수피길드' },
-  { id: 'park', name: '사장 길드', sheetName: '사장길드' },
-  { id: 'do', name: '도현 길드', sheetName: '도현길드' }
+  { id: 'SEONGTAE', name: '성태 길드', sheetName: '성태길드' },
+  { id: 'MANSIK', name: '만식 길드', sheetName: '만식길드' },
+  { id: 'OAH', name: '오아 길드', sheetName: '오아길드' },
+  { id: 'SOOPI', name: '수피 길드', sheetName: '수피길드' },
+  { id: 'CEOPARK', name: '사장 길드', sheetName: '사장길드' },
+  { id: 'DOHYUN', name: '도현 길드', sheetName: '도현길드' }
 ];
 
 const parseCSVRow = (row: string) => {
