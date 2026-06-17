@@ -10,7 +10,7 @@ export async function GET() {
             { name: "갓데드_", id: "bks04192" }, { name: "요요에요∀", id: "wooldi" }, { name: "차투리", id: "hololoolu" },
             { name: "황희봉", id: "heebong666l" }, { name: "심술:3", id: "jss1542" }, { name: "찐랑", id: "phs6162" },
             { name: "졔리", id: "0jjerry0" }, { name: "김규태", id: "gyutae1638" }, { name: "사과몽", id: "lyj9306" },
-            { name: "뽀린걸", id: "bboringirl" }, { name: "광수야.", id: "ywsh12" }, { name: "울산큰고래", id: "bach023" },
+            { name: "뽀린걸", id: "bboringirl" }, { name: "광수야.", id: "ywsh12" }, { name: "스맵임", id: "townboy" },
             { name: "우마이:>", id: "eun0333" }, { name: "S2라봄", id: "dkfma553" }, { name: "멍보리¿", id: "bb0rii" },
             { name: "혀니일세", id: "cyeong" }, { name: "히키☆", id: "hikicomoring" }, { name: "태민98", id: "damin0714" },
             { name: "니즈__", id: "neez0611" }, { name: "희희덕", id: "poippoi52" }, { name: "묵아", id: "nororo" },
@@ -36,14 +36,15 @@ export async function GET() {
             { name: "감초♥", id: "33h2101" }, { name: "힙비", id: "rlawlsthfw" }, { name: "콧시_", id: "oss0930" },
             { name: "쏭이♥", id: "gatgdf" }, { name: "잼율이", id: "jamyul2" }, { name: "_해이_", id: "kjkj4424" },
             { name: "성하늘", id: "hongseol" }, { name: "백도아", id: "heeeejyu" }, { name: "최르_", id: "csc0568" },
-            { name: "떵규_", id: "sunglim001" }, { name: "김부각º", id: "kgywjd2210" }, { name: "배민정", id: "minguri1016" },
+            { name: "떵규_", id: "sunglim001" }, { name: "김부각º", id: "kgywjd2210" }, { name: "두두지!", id: "dduduji" },
             { name: "세리아-", id: "seriya0312" }, { name: "셀키_", id: "sellkey" }, { name: "시로♥", id: "qwhy1040" },
             { name: "백청미", id: "wtcheongmi" }, { name: "초아♬", id: "ehehdldl" }, { name: "코에♬", id: "yotsubakoe" },
             { name: "새마요", id: "newmayo" }, { name: "손진석.", id: "thswlstjr666" }, { name: "니니밍", id: "niniming" },
             { name: "냥냥두둥", id: "doodong" }, { name: "묭씨", id: "secymyong" }, { name: "호미밍", id: "donggeul2" },
             { name: "이학일.", id: "sh0w422" }, { name: "설빈달", id: "nsnowthemoon" }, { name: "유키", id: "amaiyk0105" },
             { name: "르미루~", id: "rmrss2" }, { name: "투냥츠_", id: "toocats" }, { name: "쏭아야", id: "asdk0110" },
-            { name: "띠꾸♥", id: "ddikku0714" }, { name: "돗챠", id: "dotcha" }, { name: "채윤아", id: "yuna812" }
+            { name: "띠꾸♥", id: "ddikku0714" }, { name: "돗챠", id: "dotcha" }, { name: "채윤아", id: "yuna812" },
+            
         ];
         const VETERAN_APPLICANTS = [{ name: "꼼모리", id: "et0726" },
         { name: "설설설=333", id: "o31511" },
