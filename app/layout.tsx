@@ -50,7 +50,7 @@ export default function RootLayout({
 
             {/* 보스타임 (예정) - 비활성화 효과(opacity-60)는 유지하되 기본 색상은 통일 */}
             <Link href="#" className="block px-4 py-3 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all cursor-not-allowed opacity-60">
-              👹 보스타임 (예정)
+              👹 보스타임
             </Link>
 
             {/* 💡 시뮬레이터 (아래로 이동 및 위쪽 여백 mt-8 적용) */}
