@@ -4,8 +4,8 @@ import TopBar from '@/components/TopBar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '총겜동 내수서버 정보공유 사이트',
-  description: 'Made by. SOOP 김쨔응',
+  title: '총겜동 내수서버 사이트',
+  description: '총겜동 내수서버 정보공유 사이트',
 };
 
 export default function RootLayout({
@@ -25,11 +25,11 @@ export default function RootLayout({
           <div className="p-6">
             <Link href="/" className="block group">
               <h1 className="text-xl font-black text-gray-900 dark:text-white tracking-tight group-hover:text-blue-500 transition-colors">
-                총겜동 내수서버<br /><span className="text-blue-500">사이트</span>
+                총겜동 내수서버<br /><span className="text-blue-500">정보 공유 사이트</span>
               </h1>
             </Link>
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-2">
-              총겜동 내수서버 강화 시뮬레이터
+              Made by. SOOP 김쨔응
             </p>
           </div>
 
