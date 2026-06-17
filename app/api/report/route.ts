@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 // 💡 여기에 방금 [새 배포]로 발급받은 '새로운' URL을 꼭! 다시 붙여넣어 주세요!
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1516484784568664148/U3R89s9E37pDB2vbgqV1SXphXpro_eZ_povEJAGesFrbMxZNXV09U2wdkjAbQBCt5LaO";
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk_E071YypJf0WOExKYgpDVoBrXEpOEuegdnzlLUtwsR2M1wnInR1mCWFrVp6hG1w/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzg-tNwhnqb9LV7X-Fw1Jh04FRpm3XYyNsy76_tJukRpQLO21WnCbFDUmjhcYHDlHk/exec";
 
 export async function POST(req: Request) {
   try {
