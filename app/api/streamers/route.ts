@@ -9,7 +9,7 @@ export async function GET() {
         const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
         // 시트 데이터를 가져옵니다. (60초마다 최신화)
-        const res = await fetch(url, { next: { revalidate: 60 } }); 
+        const res = await fetch(url, { next: { revalidate: 31536000 } }); 
         if (!res.ok) throw new Error('시트 데이터를 가져오는데 실패했습니다.');
 
         const text = await res.text();

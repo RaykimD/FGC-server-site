@@ -25,7 +25,7 @@ export async function GET() {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
       const res = await fetch(url, { 
-        next: { revalidate: 300 } 
+        next: { revalidate: 31536000 } 
       });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
