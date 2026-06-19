@@ -30,7 +30,6 @@ export default function MultiViewPage() {
   const [selectedGuildFilter, setSelectedGuildFilter] = useState('전체');
   const [isLoading, setIsLoading] = useState(true);
 
-  // 전체화면을 제어하기 위한 ref 레퍼런스
   const playerAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,7 +51,6 @@ export default function MultiViewPage() {
             });
           });
 
-          // 💡 정렬 변경: LIVE 중인 스트리머가 맨 위로 오고, 그 안에서는 가나다순으로 정렬
           list.sort((a, b) => {
             if (a.isLive && !b.isLive) return -1;
             if (!a.isLive && b.isLive) return 1;
@@ -71,7 +69,6 @@ export default function MultiViewPage() {
     fetchGuildMembers();
   }, []);
 
-  // 브라우저 창 전체화면 토글 기능 구현
   const toggleFullscreen = () => {
     if (!playerAreaRef.current) return;
     
@@ -84,14 +81,12 @@ export default function MultiViewPage() {
     }
   };
 
-  // 길드 필터 및 이름 검색 필터링
   const filteredStreamers = allStreamers.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase().trim());
     const matchesGuild = selectedGuildFilter === '전체' || s.guildName === selectedGuildFilter;
     return matchesSearch && matchesGuild;
   });
 
-  // 총 생방송 중인 크루 인원 카운트
   const totalLiveCount = allStreamers.filter(s => s.isLive).length;
 
   const toggleStreamer = (streamer: Streamer) => {
@@ -99,21 +94,21 @@ export default function MultiViewPage() {
     if (isSelected) {
       setSelectedStreamers(prev => prev.filter(s => s.id !== streamer.id));
     } else {
-      if (selectedStreamers.length >= 9) {
-        alert('멀티뷰는 최대 9명까지만 동시 시청이 가능합니다! 📺');
+      // 💡 최대 선택 가능 인원을 4명으로 수정
+      if (selectedStreamers.length >= 4) {
+        alert('SOOP 플레이어 정책상 멀티뷰는 최대 4명까지만 동시 시청이 가능합니다! 📺');
         return;
       }
       setSelectedStreamers(prev => [...prev, streamer]);
     }
   };
 
+  // 💡 최대 인원이 4명이므로 그리드 최적화 (1, 2, 4분할 구조)
   const getGridClasses = (count: number) => {
     if (count === 0) return 'flex items-center justify-center';
     if (count === 1) return 'grid-cols-1';
     if (count === 2) return 'grid-cols-1 md:grid-cols-2';
-    if (count <= 4) return 'grid-cols-2 grid-rows-2';
-    if (count <= 6) return 'grid-cols-2 lg:grid-cols-3 grid-rows-2';
-    return 'grid-cols-3 grid-rows-3';
+    return 'grid-cols-2 grid-rows-2';
   };
 
   return (
@@ -125,15 +120,15 @@ export default function MultiViewPage() {
           <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
             📺 커스텀 멀티뷰
           </h1>
+          {/* 💡 선택 인원 표시를 4명 기준으로 수정 */}
           <p className="text-xs font-bold text-slate-500 mt-1">
-            LIVE 중 <span className="text-red-500 font-extrabold">{totalLiveCount}명</span> / 선택한 방송 ({selectedStreamers.length}/9)
+            LIVE 중 <span className="text-red-500 font-extrabold">{totalLiveCount}명</span> / 선택한 방송 ({selectedStreamers.length}/4)
           </p>
         </div>
 
         <div className="bg-white dark:bg-[#1e1e1e] rounded-2xl border border-slate-200 dark:border-gray-800 shadow-sm shadow-slate-200/40 dark:shadow-none flex-1 flex flex-col overflow-hidden min-h-0">
           
           <div className="p-4 border-b border-slate-100 dark:border-gray-800 shrink-0 space-y-2.5">
-            {/* 검색바 */}
             <div className="relative">
               <input
                 type="text"
@@ -145,7 +140,6 @@ export default function MultiViewPage() {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
             </div>
 
-            {/* 길드 선택 드롭다운 필터 */}
             <select
               value={selectedGuildFilter}
               onChange={(e) => setSelectedGuildFilter(e.target.value)}
@@ -164,7 +158,6 @@ export default function MultiViewPage() {
             )}
           </div>
 
-          {/* 스트리머 리스트 출력부 */}
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2 bg-slate-50/50 dark:bg-black/10">
             {isLoading ? (
               <div className="text-center py-10 text-sm font-bold text-slate-400 animate-pulse">최종 멤버 및 라이브 상태 동기화 중...</div>
@@ -202,7 +195,6 @@ export default function MultiViewPage() {
                             <span className={`text-sm font-black truncate ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-slate-800 dark:text-gray-200'}`}>
                               {streamer.name}
                             </span>
-                            {/* 💡 시청자 수 숫자를 지우고 빨간색 글씨로 숨 쉬듯 깜빡이는 LIVE 뱃지 추가 */}
                             {streamer.isLive && (
                               <span className="text-[10px] font-black text-red-500 animate-pulse shrink-0 tracking-tighter bg-red-500/10 dark:bg-red-500/20 px-1.5 py-0.5 rounded">
                                 LIVE
@@ -229,9 +221,7 @@ export default function MultiViewPage() {
         </div>
       </div>
 
-      {/* ==========================================
-          👉 우측: 멀티뷰 플레이어 영역 (전체화면 타겟)
-          ========================================== */}
+      {/* 👉 우측: 멀티뷰 플레이어 영역 (전체화면 타겟) */}
       <div 
         ref={playerAreaRef} 
         className="flex-1 bg-[#0c0c0c] rounded-2xl overflow-hidden border border-slate-200 dark:border-gray-800 shadow-xl relative min-h-[400px] md:min-h-0 flex flex-col group/player"
@@ -254,7 +244,8 @@ export default function MultiViewPage() {
             <h2 className="text-lg font-black text-white mb-2">커스텀 멀티뷰 극장</h2>
             <div className="space-y-1.5 text-xs font-bold text-gray-400 max-w-sm">
               <p className="text-blue-400">🛡️ 길드 현황에 투입된 최종 멤버들만 표시됩니다.</p>
-              <p>📺 원하는 방송을 클릭하면 즉시 다중 중계 창이 열립니다.</p>
+              {/* 💡 안내 텍스트 수정 */}
+              <p>📺 SOOP 정책상 <strong className="text-white">최대 4명</strong>까지 동시 시청이 가능합니다.</p>
               <p>🖥️ 영상이 로드되면 우측 상단의 전체화면을 활용해 보세요.</p>
             </div>
           </div>
