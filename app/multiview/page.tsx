@@ -241,10 +241,8 @@ export default function MultiViewPage() {
         {selectedStreamers.length === 0 ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0f0f0f]">
             <div className="w-16 h-16 mb-4 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl shadow-inner">🎛️</div>
-            <h2 className="text-lg font-black text-white mb-2">커스텀 멀티뷰 극장</h2>
+            <h2 className="text-lg font-black text-white mb-2">커스텀 멀티뷰</h2>
             <div className="space-y-1.5 text-xs font-bold text-gray-400 max-w-sm">
-              <p className="text-blue-400">🛡️ 길드 현황에 투입된 최종 멤버들만 표시됩니다.</p>
-              {/* 💡 안내 텍스트 수정 */}
               <p>📺 SOOP 정책상 <strong className="text-white">최대 4명</strong>까지 동시 시청이 가능합니다.</p>
               <p>🖥️ 영상이 로드되면 우측 상단의 전체화면을 활용해 보세요.</p>
             </div>
