@@ -12,7 +12,8 @@ type MemberData = {
 
 type GuildData = {
   id: string; name: string; members: MemberData[];
-  tools: { pickaxe4: string; pickaxe5: string; scythe3: string; scythe4: string; scythe5: string; };
+  // 💡 1. 3강 곡괭이(pickaxe3) 데이터 타입 추가
+  tools: { pickaxe3: string; pickaxe4: string; pickaxe5: string; scythe3: string; scythe4: string; scythe5: string; };
 };
 
 const MemberProfile = ({ member, size = 'lg' }: { member: MemberData, size?: 'sm' | 'lg' }) => {
@@ -33,7 +34,6 @@ const MemberProfile = ({ member, size = 'lg' }: { member: MemberData, size?: 'sm
 
 type StatVariant = 'weapon' | 'armor' | 'ring' | 'cyan' | 'emerald' | 'red' | 'amber' | 'highlight' | 'default';
 
-// 💡 수정됨: 다크모드일 때 배경색(/40, /50)과 테두리 색상을 더 밝게 조정하여 가시성 대폭 향상
 const StatBox = ({ icon, label, value, subValue, variant = 'default' }: { icon?: string, label: string, value: string | number, subValue?: string, variant?: StatVariant }) => {
   let colors = 'bg-slate-100/70 dark:bg-gray-800 border-slate-200 dark:border-gray-600 text-slate-800 dark:text-gray-100';
   if (variant === 'weapon') colors = 'bg-rose-50 dark:bg-rose-900/40 border-rose-200/60 dark:border-rose-500/70 text-rose-800 dark:text-rose-300';
@@ -63,6 +63,8 @@ export default function GuildDetailPage() {
   const [guild, setGuild] = useState<GuildData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isListView, setIsListView] = useState(false);
+
+  const blurClasses = "transition-all duration-300 [.streamer-mode_&]:blur-[6px] [.streamer-mode_&]:select-none [.streamer-mode_&]:pointer-events-none [.streamer-mode_&]:opacity-80";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,8 +113,13 @@ export default function GuildDetailPage() {
               </div>
             </div>
             
-            <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+            {/* 💡 2. 길드 자산(곡괭이/낫) 컨테이너에 blurClasses 추가 및 3강 곡괭이 삽입 */}
+            <div className={`flex gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0 ${blurClasses}`}>
               <div className="flex gap-2 bg-[#f8fafc] dark:bg-[#1a1a1a] p-2 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm whitespace-nowrap shrink-0">
+                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-600 flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">3강 곡괭이</span>
+                  <span className="text-sm font-black text-yellow-600 dark:text-yellow-500">{guild.tools.pickaxe3}</span>
+                </div>
                 <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-600 flex items-center gap-2">
                   <span className="text-xs font-bold text-slate-500 dark:text-gray-400">4강 곡괭이</span>
                   <span className="text-sm font-black text-amber-600 dark:text-amber-400">{guild.tools.pickaxe4}</span>
@@ -150,7 +157,8 @@ export default function GuildDetailPage() {
           <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
             <div className="flex flex-col gap-4">
               {guild.members.map((member, idx) => (
-                <div key={idx} className="bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-2xl p-5 border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col xl:flex-row gap-5 hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+                <div key={idx} className="bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-2xl p-5 border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col xl:flex-row gap-5 hover:border-blue-400 dark:hover:border-blue-500 transition-all relative overflow-hidden">
+                  
                   <div className="flex items-center xl:flex-col xl:items-start gap-4 xl:w-52 shrink-0 xl:border-r border-b xl:border-b-0 border-slate-200 dark:border-gray-800 pb-4 xl:pb-0 xl:pr-5">
                     <MemberProfile member={member} />
                     <div className="flex-1 min-w-0">
@@ -167,7 +175,7 @@ export default function GuildDetailPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 flex flex-col md:flex-row gap-4 min-w-0">
+                  <div className={`flex-1 flex flex-col md:flex-row gap-4 min-w-0 ${blurClasses}`}>
                     <div className="flex-1 flex flex-col justify-center gap-2.5">
                       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                         <StatBox icon="⚔️" label="무기" value={member.equip.weapon} subValue={`Atk ${member.equip.weaponAtk}`} variant="weapon" />
@@ -199,6 +207,11 @@ export default function GuildDetailPage() {
                       </div>
                     </div>
                   </div>
+                  
+                  <div className="absolute inset-0 left-[220px] items-center justify-center pointer-events-none hidden [.streamer-mode_&]:xl:flex">
+                    <span className="text-6xl opacity-10 drop-shadow-xl">🔒</span>
+                  </div>
+
                 </div>
               ))}
             </div>
@@ -248,27 +261,27 @@ export default function GuildDetailPage() {
                           <span className="text-[10px] text-slate-400 dark:text-gray-500">{member.jobTier}</span>
                         </div>
                       </td>
-                      {/* 💡 한눈에 보기(테이블 뷰)에서도 공격력(Atk)이 보이도록 추가 */}
-                      <td className="px-3 py-2.5 text-center">
+
+                      <td className={`px-3 py-2.5 text-center ${blurClasses}`}>
                         <div className="flex flex-col items-center justify-center">
                           <span className="text-slate-700 dark:text-gray-200 font-bold">{member.equip.weapon}</span>
                           <span className="text-[10px] text-rose-600 dark:text-rose-400 font-medium">Atk {member.equip.weaponAtk}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.helmet}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.armor}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.belt}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.shoes}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.ring1}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.ring2}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.ki}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.evasion}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.atkSpeed}</td>
-                      <td className="px-3 py-2.5 text-center font-black text-blue-600 dark:text-blue-400">{member.stats.sum}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.hp}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.stats.luck}</td>
-                      <td className="px-3 py-2.5 text-center text-emerald-600 dark:text-emerald-400 font-black">{member.special.lightfoot}</td>
-                      <td className="px-3 py-2.5 text-center text-amber-500 dark:text-amber-400 font-black">{member.special.mount}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.equip.helmet}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.equip.armor}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.equip.belt}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800 ${blurClasses}`}>{member.equip.shoes}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.equip.ring1}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800 ${blurClasses}`}>{member.equip.ring2}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.stats.ki}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.stats.evasion}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.stats.atkSpeed}</td>
+                      <td className={`px-3 py-2.5 text-center font-black text-blue-600 dark:text-blue-400 ${blurClasses}`}>{member.stats.sum}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 ${blurClasses}`}>{member.stats.hp}</td>
+                      <td className={`px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800 ${blurClasses}`}>{member.stats.luck}</td>
+                      <td className={`px-3 py-2.5 text-center text-emerald-600 dark:text-emerald-400 font-black ${blurClasses}`}>{member.special.lightfoot}</td>
+                      <td className={`px-3 py-2.5 text-center text-amber-500 dark:text-amber-400 font-black ${blurClasses}`}>{member.special.mount}</td>
                     </tr>
                   ))}
                 </tbody>
