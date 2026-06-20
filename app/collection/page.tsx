@@ -1,12 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 
-// API에서 불러올 모든 세부 스탯 타입 추가
+// API에서 불러오는 문자열 기반 스탯 타입으로 변경
 type Streamer = { 
   id: string; name: string; guildName: string; job: string; 
   level: number; power: number; 
-  weapon: number; armor: number; innerPower: number; 
-  evasion: number; atkSpeed: number; hp: number; luck: number; 
+  weapon: string; armor: string; innerPower: string; 
+  evasion: string; atkSpeed: string; hp: string; luck: string; 
 };
 type UnlockedData = { level: number; pullCount: number; };
 type CollectionState = Record<string, UnlockedData>;
@@ -71,21 +71,34 @@ export default function CollectionGamePage() {
           json.data.forEach((g: any) => {
             if (!g.members) return;
             g.members.forEach((m: any) => {
-              // API에서 넘어오는 모든 세부 스탯 매핑 (없으면 0으로 처리)
+              
+              // API 구조(m.equip, m.stats)를 프론트에 맞게 매핑
+              const wStr = m.equip?.weapon || '+0';
+              const aStr = m.equip?.armor || '+0';
+              const hpStr = m.stats?.hp || '0';
+              const kiStr = m.stats?.ki || '0';
+              
+              // 전투력을 시각적으로 계산하기 위해 숫자만 추출
+              const wNum = parseInt(wStr.replace(/[^0-9]/g, '')) || 0;
+              const aNum = parseInt(aStr.replace(/[^0-9]/g, '')) || 0;
+              const hpNum = parseInt(hpStr.replace(/[^0-9]/g, '')) || 0;
+              const kiNum = parseInt(kiStr.replace(/[^0-9]/g, '')) || 0;
+              const calculatedPower = (wNum * 500) + (aNum * 300) + (hpNum * 2) + (kiNum * 10);
+
               list.push({ 
                 id: m.id, 
                 name: m.name, 
                 guildName: g.name,
-                job: m.job || m.role || m.className || '직업 없음',
-                level: Number(m.level || m.lv || 0),
-                power: Number(m.power || m.combatPower || m.cp || 0),
-                weapon: Number(m.weapon || 0),
-                armor: Number(m.armor || 0),
-                innerPower: Number(m.innerPower || 0),
-                evasion: Number(m.evasion || 0),
-                atkSpeed: Number(m.atkSpeed || 0),
-                hp: Number(m.hp || m.health || 0),
-                luck: Number(m.luck || 0)
+                job: m.job || m.role || '직업 없음',
+                level: parseInt((m.jobTier || '0').replace(/[^0-9]/g, '')) || 0,
+                power: calculatedPower,
+                weapon: wStr,
+                armor: aStr,
+                innerPower: kiStr,
+                evasion: m.stats?.evasion || '0%',
+                atkSpeed: m.stats?.atkSpeed || '0%',
+                hp: hpStr,
+                luck: m.stats?.luck || '0'
               });
             });
           });
@@ -97,7 +110,7 @@ export default function CollectionGamePage() {
         setIsLoading(false);
       }
       
-      const saved = localStorage.getItem('minigame_data_final_v5');
+      const saved = localStorage.getItem('minigame_data_final_v6');
       if (saved) {
         const data = JSON.parse(saved);
         setPoints(data.points || 0);
@@ -115,7 +128,7 @@ export default function CollectionGamePage() {
 
   useEffect(() => {
     if (isLoading) return;
-    localStorage.setItem('minigame_data_final_v5', JSON.stringify({ points, tickets, stones, luckyStones, premiumStones, collection, isAttended, lastAttendance: new Date().toDateString() }));
+    localStorage.setItem('minigame_data_final_v6', JSON.stringify({ points, tickets, stones, luckyStones, premiumStones, collection, isAttended, lastAttendance: new Date().toDateString() }));
   }, [points, tickets, stones, luckyStones, premiumStones, collection, isAttended, isLoading]);
 
   const showLog = (msg: string) => {
@@ -234,7 +247,7 @@ export default function CollectionGamePage() {
 
       {logMsg && <div className="fixed top-10 left-1/2 -translate-x-1/2 z-50 bg-black text-white px-8 py-4 rounded-full font-black text-sm">{logMsg}</div>}
       
-      {/* 🃏 포켓몬 카드 스타일 도감 상세 팝업 (모든 스탯 연동) */}
+      {/* 🃏 포켓몬 카드 스타일 도감 상세 팝업 (모든 스탯 완벽 연동) */}
       {selectedCard && collection[selectedCard.id] && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in overflow-y-auto custom-scrollbar py-10" onClick={() => setSelectedCard(null)}>
           <div className="relative w-full max-w-sm bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl border-4 border-slate-600 shadow-2xl p-6 m-auto" onClick={e => e.stopPropagation()}>
@@ -259,15 +272,15 @@ export default function CollectionGamePage() {
               <h4 className="text-xs font-black text-slate-500 mb-3 text-center">⚔️ 인게임 종합 스탯 ⚔️</h4>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <div className="stat-box"><span className="stat-label">직업</span><span className="stat-value text-white">{selectedCard.job}</span></div>
-                <div className="stat-box"><span className="stat-label">레벨</span><span className="stat-value text-blue-400">Lv.{selectedCard.level > 0 ? selectedCard.level : '?'}</span></div>
-                <div className="stat-box"><span className="stat-label">무기 강화</span><span className="stat-value text-orange-400">+{selectedCard.weapon}</span></div>
-                <div className="stat-box"><span className="stat-label">방어구 강화</span><span className="stat-value text-indigo-400">+{selectedCard.armor}</span></div>
+                <div className="stat-box"><span className="stat-label">전직차수</span><span className="stat-value text-blue-400">{selectedCard.level}차</span></div>
+                <div className="stat-box"><span className="stat-label">무기 강화</span><span className="stat-value text-orange-400">{selectedCard.weapon}</span></div>
+                <div className="stat-box"><span className="stat-label">방어구 강화</span><span className="stat-value text-indigo-400">{selectedCard.armor}</span></div>
                 <div className="stat-box"><span className="stat-label">내공</span><span className="stat-value text-cyan-400">{selectedCard.innerPower}</span></div>
-                <div className="stat-box"><span className="stat-label">체력</span><span className="stat-value text-emerald-400">{selectedCard.hp > 0 ? selectedCard.hp.toLocaleString() : '?'}</span></div>
+                <div className="stat-box"><span className="stat-label">체력</span><span className="stat-value text-emerald-400">{selectedCard.hp}</span></div>
                 <div className="stat-box"><span className="stat-label">공격속도</span><span className="stat-value text-yellow-300">{selectedCard.atkSpeed}</span></div>
                 <div className="stat-box"><span className="stat-label">회피율</span><span className="stat-value text-teal-300">{selectedCard.evasion}</span></div>
                 <div className="stat-box"><span className="stat-label">운</span><span className="stat-value text-pink-400">{selectedCard.luck}</span></div>
-                <div className="stat-box border-red-900/50 bg-red-900/20"><span className="stat-label text-red-300">서버 전투력</span><span className="stat-value text-red-400">{selectedCard.power > 0 ? selectedCard.power.toLocaleString() : '?'}</span></div>
+                <div className="stat-box border-red-900/50 bg-red-900/20"><span className="stat-label text-red-300">서버 전투력</span><span className="stat-value text-red-400">{selectedCard.power.toLocaleString()}</span></div>
               </div>
               
               <div className="h-px w-full bg-slate-700 my-4"></div>

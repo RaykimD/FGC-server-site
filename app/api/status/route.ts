@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-export const revalidate = 90; // 💡 90초 캐시로 아프리카 서버 부하 및 차단 완벽 방지
+export const dynamic = 'force-dynamic'; // 💡 무조건 최신 데이터를 가져오도록 강제
+export const revalidate = 0; // 💡 캐싱 완전 삭제 (실시간 반영)
 
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
@@ -17,7 +18,6 @@ const parseCSVRow = (row: string) => {
   return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(s => s.replace(/(^"|"$)/g, '').trim());
 };
 
-// 💡 SOOP 실시간 방송 정보 가져오는 헬퍼 함수
 async function getSoopLiveStatus(bjId: string) {
   if (!bjId) return { isLive: false, viewers: 0 };
   try {
@@ -27,7 +27,6 @@ async function getSoopLiveStatus(bjId: string) {
     });
     if (!res.ok) return { isLive: false, viewers: 0 };
     const json = await res.json();
-    // broad 객체가 존재하면 현재 생방송 중임
     if (json.broad) {
       return {
         isLive: true,
@@ -45,7 +44,8 @@ export async function GET() {
     const allGuildsData = await Promise.all(GUILDS_INFO.map(async (guild) => {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
-      const res = await fetch(url, { next: { revalidate: 31536000 } });
+      // 💡 여기서 1년(31536000)으로 되어있던 캐싱을 0으로 고쳤습니다!
+      const res = await fetch(url, { next: { revalidate: 0 }, cache: 'no-store' });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
 
@@ -109,7 +109,6 @@ export async function GET() {
         });
       }
 
-      // 💡 핵심: 긁어온 최종 멤버들의 SOOP 라이브 상태를 실시간 병렬 확인 연동
       const members = await Promise.all(rawMembers.map(async (member) => {
         const liveStatus = await getSoopLiveStatus(member.id);
         return {
