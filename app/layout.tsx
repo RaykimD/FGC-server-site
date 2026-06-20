@@ -93,11 +93,10 @@ export default function RootLayout({
                 <Link href="/multiview" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
                   📺 커스텀 멀티뷰
                 </Link>
-                <Link href="/attendance" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
-                  📅 출석체크
-                </Link>
+                
+                {/* 💡 기존 출석체크 링크 제거, 컬렉션을 덱 메이커로 통합하여 이름 변경 */}
                 <Link href="/collection" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all mb-6">
-                  🃏 스트리머 도감
+                  🃏 스트리머 덱 메이커
                 </Link>
               </div>
             </details>
