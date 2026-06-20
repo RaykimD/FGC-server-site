@@ -1,7 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 
-type Streamer = { id: string; name: string; guildName: string; job: string; level: number; power: number; };
+// API에서 불러올 모든 세부 스탯 타입 추가
+type Streamer = { 
+  id: string; name: string; guildName: string; job: string; 
+  level: number; power: number; 
+  weapon: number; armor: number; innerPower: number; 
+  evasion: number; atkSpeed: number; hp: number; luck: number; 
+};
 type UnlockedData = { level: number; pullCount: number; };
 type CollectionState = Record<string, UnlockedData>;
 
@@ -65,13 +71,21 @@ export default function CollectionGamePage() {
           json.data.forEach((g: any) => {
             if (!g.members) return;
             g.members.forEach((m: any) => {
+              // API에서 넘어오는 모든 세부 스탯 매핑 (없으면 0으로 처리)
               list.push({ 
                 id: m.id, 
                 name: m.name, 
                 guildName: g.name,
                 job: m.job || m.role || m.className || '직업 없음',
                 level: Number(m.level || m.lv || 0),
-                power: Number(m.power || m.combatPower || m.cp || 0)
+                power: Number(m.power || m.combatPower || m.cp || 0),
+                weapon: Number(m.weapon || 0),
+                armor: Number(m.armor || 0),
+                innerPower: Number(m.innerPower || 0),
+                evasion: Number(m.evasion || 0),
+                atkSpeed: Number(m.atkSpeed || 0),
+                hp: Number(m.hp || m.health || 0),
+                luck: Number(m.luck || 0)
               });
             });
           });
@@ -83,7 +97,7 @@ export default function CollectionGamePage() {
         setIsLoading(false);
       }
       
-      const saved = localStorage.getItem('minigame_data_final4');
+      const saved = localStorage.getItem('minigame_data_final_v5');
       if (saved) {
         const data = JSON.parse(saved);
         setPoints(data.points || 0);
@@ -101,7 +115,7 @@ export default function CollectionGamePage() {
 
   useEffect(() => {
     if (isLoading) return;
-    localStorage.setItem('minigame_data_final4', JSON.stringify({ points, tickets, stones, luckyStones, premiumStones, collection, isAttended, lastAttendance: new Date().toDateString() }));
+    localStorage.setItem('minigame_data_final_v5', JSON.stringify({ points, tickets, stones, luckyStones, premiumStones, collection, isAttended, lastAttendance: new Date().toDateString() }));
   }, [points, tickets, stones, luckyStones, premiumStones, collection, isAttended, isLoading]);
 
   const showLog = (msg: string) => {
@@ -213,13 +227,17 @@ export default function CollectionGamePage() {
           100% { transform: scale(1.08) translate(1px,-1px); filter: brightness(2.5); }
         }
         .animate-tension { animation: tension 1.5s ease-in-out forwards; }
+        .stat-box { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 6px 12px; border-radius: 8px; border: 1px solid #334155; }
+        .stat-label { color: #94a3b8; font-weight: 700; font-size: 0.75rem; }
+        .stat-value { font-weight: 900; font-size: 0.85rem; }
       `}</style>
 
       {logMsg && <div className="fixed top-10 left-1/2 -translate-x-1/2 z-50 bg-black text-white px-8 py-4 rounded-full font-black text-sm">{logMsg}</div>}
       
+      {/* 🃏 포켓몬 카드 스타일 도감 상세 팝업 (모든 스탯 연동) */}
       {selectedCard && collection[selectedCard.id] && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in" onClick={() => setSelectedCard(null)}>
-          <div className="relative w-full max-w-sm bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl border-4 border-slate-600 shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in overflow-y-auto custom-scrollbar py-10" onClick={() => setSelectedCard(null)}>
+          <div className="relative w-full max-w-sm bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl border-4 border-slate-600 shadow-2xl p-6 m-auto" onClick={e => e.stopPropagation()}>
             <button onClick={() => setSelectedCard(null)} className="absolute top-4 right-4 text-white/50 hover:text-white font-black text-xl">✕</button>
             <div className="flex justify-between items-start mb-4">
               <div className="bg-purple-600 px-3 py-1 rounded-lg font-black text-white text-sm shadow-md">
@@ -230,36 +248,34 @@ export default function CollectionGamePage() {
               </div>
             </div>
             <div className="flex flex-col items-center mb-6">
-              <div className="w-32 h-32 rounded-full border-4 border-blue-400 overflow-hidden mb-4 shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+              <div className="w-32 h-32 rounded-full border-4 border-blue-400 overflow-hidden mb-4 shadow-[0_0_20px_rgba(59,130,246,0.5)] bg-slate-800">
                 <img src={`https://profile.img.afreecatv.com/LOGO/${selectedCard.id.substring(0, 2).toLowerCase()}/${selectedCard.id}/${selectedCard.id}.jpg`} className="w-full h-full object-cover" />
               </div>
               <span className="text-xs font-bold text-slate-400 mb-1">{selectedCard.guildName}</span>
               <h2 className="text-2xl font-black text-white">{selectedCard.name}</h2>
             </div>
             
-            <div className="bg-black/40 rounded-xl p-4 border border-slate-700 w-full mt-4">
-              <h4 className="text-xs font-black text-slate-500 mb-3 text-center">세부 정보</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm mb-2">
-                <div className="flex justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
-                  <span className="text-slate-400 font-bold">직업</span>
-                  <span className="text-white font-black">{selectedCard.job}</span>
-                </div>
-                <div className="flex justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
-                  <span className="text-slate-400 font-bold">인게임 레벨</span>
-                  <span className="text-blue-400 font-black">Lv.{selectedCard.level}</span>
-                </div>
-                <div className="flex justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
-                  <span className="text-slate-400 font-bold">서버 전투력</span>
-                  <span className="text-red-400 font-black">{selectedCard.power.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between bg-slate-800 px-3 py-2 rounded-lg border border-slate-700">
-                  <span className="text-slate-400 font-bold">도감 조각</span>
-                  <span className="text-emerald-400 font-black">{getNextStarReq(collection[selectedCard.id].pullCount)}</span>
-                </div>
+            <div className="bg-black/40 rounded-xl p-4 border border-slate-700 w-full mt-2">
+              <h4 className="text-xs font-black text-slate-500 mb-3 text-center">⚔️ 인게임 종합 스탯 ⚔️</h4>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="stat-box"><span className="stat-label">직업</span><span className="stat-value text-white">{selectedCard.job}</span></div>
+                <div className="stat-box"><span className="stat-label">레벨</span><span className="stat-value text-blue-400">Lv.{selectedCard.level > 0 ? selectedCard.level : '?'}</span></div>
+                <div className="stat-box"><span className="stat-label">무기 강화</span><span className="stat-value text-orange-400">+{selectedCard.weapon}</span></div>
+                <div className="stat-box"><span className="stat-label">방어구 강화</span><span className="stat-value text-indigo-400">+{selectedCard.armor}</span></div>
+                <div className="stat-box"><span className="stat-label">내공</span><span className="stat-value text-cyan-400">{selectedCard.innerPower}</span></div>
+                <div className="stat-box"><span className="stat-label">체력</span><span className="stat-value text-emerald-400">{selectedCard.hp > 0 ? selectedCard.hp.toLocaleString() : '?'}</span></div>
+                <div className="stat-box"><span className="stat-label">공격속도</span><span className="stat-value text-yellow-300">{selectedCard.atkSpeed}</span></div>
+                <div className="stat-box"><span className="stat-label">회피율</span><span className="stat-value text-teal-300">{selectedCard.evasion}</span></div>
+                <div className="stat-box"><span className="stat-label">운</span><span className="stat-value text-pink-400">{selectedCard.luck}</span></div>
+                <div className="stat-box border-red-900/50 bg-red-900/20"><span className="stat-label text-red-300">서버 전투력</span><span className="stat-value text-red-400">{selectedCard.power > 0 ? selectedCard.power.toLocaleString() : '?'}</span></div>
               </div>
-              <div className="flex justify-between bg-slate-800 px-3 py-2 rounded-lg border border-purple-500/50 w-full shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-                <span className="text-purple-300 font-bold">카드 자체 전투력</span>
-                <span className="text-purple-400 font-black">{(1000 + (collection[selectedCard.id].level * 150) + (getStarCount(collection[selectedCard.id].pullCount) * 300)).toLocaleString()}</span>
+              
+              <div className="h-px w-full bg-slate-700 my-4"></div>
+
+              <h4 className="text-xs font-black text-slate-500 mb-3 text-center">🎴 도감 컬렉션 정보 🎴</h4>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div className="stat-box"><span className="stat-label">다음 성급 조각</span><span className="stat-value text-emerald-400">{getNextStarReq(collection[selectedCard.id].pullCount)}</span></div>
+                <div className="stat-box border-purple-900/50 bg-purple-900/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]"><span className="stat-label text-purple-300">카드 전투력</span><span className="stat-value text-purple-400">{(1000 + (collection[selectedCard.id].level * 150) + (getStarCount(collection[selectedCard.id].pullCount) * 300)).toLocaleString()}</span></div>
               </div>
             </div>
           </div>
