@@ -90,11 +90,17 @@ export default function RootLayout({
                 <span className="text-[10px] transition-transform duration-300 group-open:rotate-180">▼</span>
               </summary>
               <div className="space-y-1 mt-1 pl-1 border-l-2 border-slate-100 dark:border-gray-800 ml-2">
+                
+                {/* 💡 새로 추가된 길드 직업 예측 링크 (라운지 첫 번째 항목) */}
+                <Link href="/job-maker" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
+                  👥 길드 직업 예측
+                </Link>
+
                 <Link href="/multiview" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
                   📺 커스텀 멀티뷰
                 </Link>
                 
-                {/* 💡 기존 출석체크 링크 제거, 컬렉션을 덱 메이커로 통합하여 이름 변경 */}
+                {/* 💡 컬렉션을 덱 메이커로 통합 */}
                 <Link href="/collection" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all mb-6">
                   🃏 스트리머 덱 메이커
                 </Link>
