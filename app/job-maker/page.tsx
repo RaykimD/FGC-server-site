@@ -16,7 +16,6 @@ interface JobClass {
 
 const GUILDS = ['성태 길드', '만식 길드', '오아 길드', '수피 길드', '사장 길드', '도현 길드'];
 
-// 💡 각 데이터에 type: 'base' 및 type: 'hidden'을 명시하여 빨간 줄 에러 완벽 해결!
 const JOB_PAIRS: { base: JobClass, hidden: JobClass }[] = [
   { 
     base: { id: 'sword', name: '검객', type: 'base', max: 3, headerColor: 'bg-slate-600 text-white', zoneColor: 'bg-slate-700/50', ringColor: 'border-slate-400' },
@@ -148,12 +147,14 @@ export default function JobMakerPage() {
       }
       
       const element = document.getElementById('roster-board');
-      if (!element) return;
+      if (!element) throw new Error('캡처 대상을 찾을 수 없습니다.');
       
+      // 💡 옵션 보강: allowTaint, logging 등 캡처 안정성 강화
       const canvas = await (window as any).html2canvas(element, {
         backgroundColor: '#1e293b',
         scale: 2, 
         useCORS: true, 
+        allowTaint: true
       });
       
       const link = document.createElement('a');
@@ -164,7 +165,7 @@ export default function JobMakerPage() {
       showLog('✅ 이미지가 성공적으로 저장되었습니다!');
     } catch (err) {
       console.error(err);
-      showLog('❌ 이미지 저장에 실패했습니다.');
+      showLog('❌ 이미지 저장에 실패했습니다. (CORS 권한 문제일 수 있습니다)');
     } finally {
       setIsCapturing(false);
     }
@@ -225,7 +226,8 @@ export default function JobMakerPage() {
                   const firstTwo = streamer.id.substring(0, 2).toLowerCase();
                   return (
                     <div key={streamer.id} draggable onDragStart={(e) => onDragStart(e, streamer, pair.base.id)} onClick={() => removeFromJob(pair.base.id, streamer.id)} className="relative group cursor-grab active:cursor-grabbing flex flex-col items-center w-16 hover:-translate-y-1 transition-transform">
-                      <img src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className={`w-14 h-14 rounded-full object-cover border-2 ${pair.base.ringColor} shadow-md bg-slate-800`} />
+                      {/* 💡 crossOrigin="anonymous" 속성 추가! */}
+                      <img crossOrigin="anonymous" src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className={`w-14 h-14 rounded-full object-cover border-2 ${pair.base.ringColor} shadow-md bg-slate-800`} />
                       <div className="absolute top-0 w-14 h-14 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span className="text-white text-[10px] font-black">빼기</span></div>
                       <span className="mt-1.5 text-[11px] font-black text-white bg-slate-900/80 px-2 py-0.5 rounded shadow-sm w-full text-center truncate">{streamer.name}</span>
                     </div>
@@ -251,7 +253,8 @@ export default function JobMakerPage() {
                   const firstTwo = streamer.id.substring(0, 2).toLowerCase();
                   return (
                     <div key={streamer.id} draggable onDragStart={(e) => onDragStart(e, streamer, pair.hidden.id)} onClick={() => removeFromJob(pair.hidden.id, streamer.id)} className="relative group cursor-grab active:cursor-grabbing flex flex-col items-center w-20 hover:-translate-y-1 transition-transform">
-                      <img src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className={`w-16 h-16 rounded-full object-cover border-[3px] ${pair.hidden.ringColor} bg-slate-800`} />
+                      {/* 💡 crossOrigin="anonymous" 속성 추가! */}
+                      <img crossOrigin="anonymous" src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className={`w-16 h-16 rounded-full object-cover border-[3px] ${pair.hidden.ringColor} bg-slate-800`} />
                       <div className="absolute top-0 w-16 h-16 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><span className="text-white text-[11px] font-black">빼기</span></div>
                       <span className="mt-1.5 text-[12px] font-black text-white bg-black px-2.5 py-0.5 rounded shadow-sm border border-current w-full text-center truncate" style={{ borderColor: 'inherit' }}>{streamer.name}</span>
                     </div>
@@ -288,7 +291,8 @@ export default function JobMakerPage() {
                   onDragStart={(e) => onDragStart(e, streamer, 'pool')}
                   className="w-14 flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform p-1 rounded hover:bg-slate-700"
                 >
-                  <img src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className="w-10 h-10 rounded-full object-cover pointer-events-none border border-slate-500 bg-slate-800" />
+                  {/* 💡 crossOrigin="anonymous" 속성 추가! */}
+                  <img crossOrigin="anonymous" src={`https://profile.img.afreecatv.com/LOGO/${firstTwo}/${streamer.id}/${streamer.id}.jpg`} className="w-10 h-10 rounded-full object-cover pointer-events-none border border-slate-500 bg-slate-800" />
                   <span className="text-[10px] font-bold text-slate-300 w-full text-center truncate pointer-events-none">{streamer.name}</span>
                 </div>
               );
