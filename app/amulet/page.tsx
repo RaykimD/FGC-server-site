@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 
+// --- 데이터 정의 ---
 type Tier = '일반' | '고급' | '희귀';
 
 interface AmuletOption { statName: string; min: number; max: number; names: string[]; }
@@ -124,22 +125,14 @@ export default function AmuletSimulator() {
     showLog(`👇 최대 ${costToMax}장까지 재료를 선택할 수 있습니다.`);
   };
 
-  // 💡 정렬된 보관함(sortedInventory)에서 앞에서부터 순서대로 자동 선택 (실수 연출 도입!)
   const handleAutoSelect = () => {
     if (!selectionMode) return;
-    
-    const availableNormals = sortedInventory.filter(
-      a => a.tier === '일반' && 
-      a.id !== selectionMode.target.data.id && 
-      !selectionMode.selectedIds.includes(a.id)
-    );
-    
+    const availableNormals = sortedInventory.filter(a => a.tier === '일반' && a.id !== selectionMode.target.data.id && !selectionMode.selectedIds.includes(a.id));
     const needed = selectionMode.costToMax - selectionMode.selectedIds.length;
     
     if (needed <= 0) return showLog('❌ 이미 최대치까지 선택되었습니다.');
     if (availableNormals.length === 0) return showLog('❌ 더 이상 선택할 수 있는 일반 부적이 없습니다.');
 
-    // 정렬 순서대로 무조건 슬라이스하여 가져옴 (10레벨 부적도 포함될 수 있음)
     const toSelect = availableNormals.slice(0, needed).map(a => a.id);
     setSelectionMode({
       ...selectionMode,
@@ -297,31 +290,33 @@ export default function AmuletSimulator() {
     <div className="h-full flex flex-col p-6 bg-[#0f172a] text-white rounded-2xl overflow-hidden relative border border-slate-800 shadow-2xl pb-24">
       {logMsg && <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border-2 border-emerald-500 text-white px-8 py-4 rounded-full font-black text-sm shadow-[0_0_20px_rgba(16,185,129,0.4)] animate-fade-in">{logMsg}</div>}
 
-      <div className="flex justify-between items-center bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-lg shrink-0 mb-6 z-10">
+      {/* 💡 헤더 여백 축소 (p-5 -> p-4, mb-6 -> mb-4) */}
+      <div className="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-lg shrink-0 mb-4 z-10">
         <div>
-          <h1 className="text-2xl font-black text-white drop-shadow-md">🎴 특수 부적 강화 시뮬레이터</h1>
-          <p className="text-xs font-bold text-slate-400 mt-1">부적을 뽑고 한방에 성장시켜 강력한 세트를 완성하세요!</p>
+          <h1 className="text-xl font-black text-white drop-shadow-md">🎴 부적 강화 시뮬레이터</h1>
+          <p className="text-[11px] font-bold text-slate-400 mt-0.5">부적을 뽑고 성장시켜 추가 능력치를 얻어보세요!</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
           <div className="text-right">
-            <p className="text-xs font-bold text-slate-400 mb-1">총 사용한 별풍선 티켓 : <span className="text-amber-400 font-black text-base">{usedTickets}장</span></p>
-            <p className="text-xs font-bold text-slate-400">총 생성한 부적 개수 : <span className="text-emerald-400 font-black text-base">{totalGenerated}장</span></p>
+            <p className="text-[11px] font-bold text-slate-400 mb-0.5">사용한 별풍선 : <span className="text-amber-400 font-black text-sm">{usedTickets}개</span></p>
+            <p className="text-[11px] font-bold text-slate-400">생성한 부적 : <span className="text-emerald-400 font-black text-sm">{totalGenerated}장</span></p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => handleDraw(1)} className="bg-slate-700 hover:bg-slate-600 px-5 py-2.5 rounded-lg text-white text-sm font-black transition-colors border border-slate-500 shadow-sm">
+            <button onClick={() => handleDraw(1)} className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-white text-xs font-black transition-colors border border-slate-500 shadow-sm">
               1장 뽑기
             </button>
-            <button onClick={() => handleDraw(10)} className="bg-emerald-600 hover:bg-emerald-500 px-5 py-2.5 rounded-lg text-white text-sm font-black transition-colors border border-emerald-500 shadow-sm">
+            <button onClick={() => handleDraw(10)} className="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-white text-xs font-black transition-colors border border-emerald-500 shadow-sm">
               10장 뽑기
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8 shrink-0">
+      {/* 💡 장착 슬롯 크기 대폭 축소 & 가운데 정렬 (높이 다이어트) */}
+      <div className="flex justify-center gap-8 mb-5 shrink-0">
         {equipped.map((amulet, idx) => (
           <div key={`slot-${idx}`} className="flex flex-col items-center">
-            <h2 className="text-xs font-black text-slate-400 mb-3 bg-slate-800 px-4 py-1 rounded-full border border-slate-700 shadow-sm">
+            <h2 className="text-[11px] font-black text-slate-400 mb-2 bg-slate-800 px-3 py-0.5 rounded-full border border-slate-700 shadow-sm">
               장착 슬롯 {idx + 1}
             </h2>
             
@@ -331,49 +326,51 @@ export default function AmuletSimulator() {
                   if (selectionMode) return showLog('❌ 재료 선택 모드 중에는 슬롯을 조작할 수 없습니다.');
                   setSelectedAmulet({ data: amulet, location: 'equipped', index: idx });
                 }}
-                className={`w-full max-w-[220px] aspect-[3/4] rounded-xl flex flex-col items-center justify-between p-4 bg-gradient-to-b border-4 relative transition-transform shadow-xl ${TIER_COLORS[amulet.tier]} ${selectionMode ? 'cursor-not-allowed opacity-50 grayscale' : 'cursor-pointer hover:-translate-y-2'}`}
+                // 💡 크기를 w-[170px] h-[230px] 로 고정하여 확실하게 줄였습니다.
+                className={`w-[170px] h-[230px] rounded-xl flex flex-col items-center justify-between p-3 bg-gradient-to-b border-4 relative transition-transform shadow-xl ${TIER_COLORS[amulet.tier]} ${selectionMode ? 'cursor-not-allowed opacity-50 grayscale' : 'cursor-pointer hover:-translate-y-1'}`}
               >
                 {selectionMode?.target.data.id === amulet.id && (
                   <div className="absolute inset-0 bg-blue-900/60 rounded-lg flex items-center justify-center z-10">
-                    <span className="text-sm font-black text-white px-3 py-1.5 bg-blue-600 rounded-lg border border-blue-400 shadow-lg">강화 대상</span>
+                    <span className="text-xs font-black text-white px-2 py-1 bg-blue-600 rounded-md border border-blue-400 shadow-lg">강화 대상</span>
                   </div>
                 )}
                 
-                <div className="w-full flex justify-between items-center text-xs font-black bg-black/40 px-2 py-1 rounded shadow-inner">
+                <div className="w-full flex justify-between items-center text-[11px] font-black bg-black/40 px-2 py-0.5 rounded shadow-inner">
                   <span>{amulet.tier}</span>
                   <span className={amulet.level === 10 ? 'text-red-400' : 'text-yellow-400'}>Lv.{amulet.level}</span>
                 </div>
                 
                 <div className="text-center w-full">
-                  <h3 className="text-xl font-black mb-1 drop-shadow-md truncate">[{amulet.name}] 부적</h3>
-                  <div className="bg-black/60 px-2 py-2 rounded-lg border border-current mt-2 shadow-inner">
-                    <p className="text-[11px] opacity-80 mb-0.5">{amulet.option.statName}</p>
-                    <p className="text-base font-black text-yellow-300">+{getStatValue(amulet.option, amulet.level)}</p>
+                  <h3 className="text-lg font-black mb-1 drop-shadow-md truncate">[{amulet.name}] 부적</h3>
+                  <div className="bg-black/60 px-2 py-1.5 rounded-lg border border-current mt-1.5 shadow-inner">
+                    <p className="text-[10px] opacity-80 mb-0.5">{amulet.option.statName}</p>
+                    <p className="text-sm font-black text-yellow-300">+{getStatValue(amulet.option, amulet.level)}</p>
                   </div>
                 </div>
                 
-                <div className="w-full bg-black/50 h-2.5 rounded-full overflow-hidden border border-slate-500 relative shadow-inner">
+                <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden border border-slate-500 relative shadow-inner">
                   <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${(getCurrentExp(amulet.tier, amulet.level, amulet.exp) / getTotalExpNeeded(amulet.tier)) * 100}%` }} />
                 </div>
               </div>
             ) : (
-              <div className={`w-full max-w-[220px] aspect-[3/4] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-800/30 transition-colors ${selectionMode ? 'opacity-50' : ''}`}>
-                <span className="text-sm font-bold text-slate-600 mt-2">비어있음</span>
+              <div className={`w-[170px] h-[230px] border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center bg-slate-800/30 transition-colors ${selectionMode ? 'opacity-50' : ''}`}>
+                <span className="text-xs font-bold text-slate-600 mt-1">비어있음</span>
               </div>
             )}
           </div>
         ))}
       </div>
 
-      <div className={`flex-1 bg-slate-800 rounded-2xl border ${selectionMode ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'border-slate-700'} flex flex-col overflow-hidden shadow-lg min-h-[200px] transition-all`}>
-        <div className={`p-3 border-b shrink-0 flex justify-between items-center transition-colors ${selectionMode ? 'bg-blue-900 border-blue-500' : 'bg-slate-900 border-slate-700'}`}>
-          <h2 className="text-sm font-black text-white flex items-center gap-2">
+      {/* 💡 인벤토리 높이 보장 (min-h-[360px] 이상으로 늘려 최소 2줄 이상 무조건 보이게 설정) */}
+      <div className={`flex-1 bg-slate-800 rounded-2xl border ${selectionMode ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'border-slate-700'} flex flex-col overflow-hidden shadow-lg min-h-[380px] transition-all`}>
+        <div className={`p-2.5 border-b shrink-0 flex justify-between items-center transition-colors ${selectionMode ? 'bg-blue-900 border-blue-500' : 'bg-slate-900 border-slate-700'}`}>
+          <h2 className="text-sm font-black text-white flex items-center gap-2 px-2">
             {selectionMode ? '🎯 재료로 사용할 일반 부적을 선택하세요' : '📥 부적 보관함'}
           </h2>
-          <span className="text-xs font-bold bg-slate-800 px-3 py-1 rounded text-slate-300 border border-slate-700">{inventory.length}개 보유</span>
+          <span className="text-[11px] font-bold bg-slate-800 px-2.5 py-0.5 rounded text-slate-300 border border-slate-700">{inventory.length}개 보유</span>
         </div>
         
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-wrap content-start gap-3 bg-slate-900/30">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-wrap content-start gap-2.5 bg-slate-900/30">
           {sortedInventory.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs font-bold">
               보관된 부적이 없습니다. 뽑기를 진행해주세요.
@@ -425,23 +422,24 @@ export default function AmuletSimulator() {
         </div>
       </div>
 
+      {/* 액션 모달 및 배너 등은 기존과 동일하게 유지 */}
       {selectionMode && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border-2 border-blue-500 text-white px-8 py-5 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.5)] flex flex-col md:flex-row items-center gap-6 md:gap-12 animate-slide-up w-11/12 max-w-3xl justify-between">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-slate-900 border-2 border-blue-500 text-white px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.5)] flex flex-col md:flex-row items-center gap-6 md:gap-12 animate-slide-up w-11/12 max-w-3xl justify-between">
           <div>
-            <p className="text-sm font-black text-blue-400 mb-1">🔥 성장 재료 선택 모드</p>
-            <p className="text-lg font-bold">재료 선택 (<span className={selectionMode.selectedIds.length === selectionMode.costToMax ? 'text-emerald-400' : 'text-yellow-400'}>{selectionMode.selectedIds.length}</span> / 최대 {selectionMode.costToMax})</p>
+            <p className="text-[11px] font-black text-blue-400 mb-0.5">🔥 성장 재료 선택 모드</p>
+            <p className="text-base font-bold">재료 선택 (<span className={selectionMode.selectedIds.length === selectionMode.costToMax ? 'text-emerald-400' : 'text-yellow-400'}>{selectionMode.selectedIds.length}</span> / 최대 {selectionMode.costToMax})</p>
           </div>
-          <div className="flex gap-3 w-full md:w-auto">
-            <button onClick={handleAutoSelect} className="flex-1 md:flex-none px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 font-black transition-colors text-slate-200 border border-slate-500">
+          <div className="flex gap-2 w-full md:w-auto">
+            <button onClick={handleAutoSelect} className="flex-1 md:flex-none px-4 py-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-black transition-colors text-slate-200 border border-slate-500">
               일괄 자동선택
             </button>
-            <button onClick={() => setSelectionMode(null)} className="flex-1 md:flex-none px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 font-black transition-colors text-red-300 border border-slate-500">
+            <button onClick={() => setSelectionMode(null)} className="flex-1 md:flex-none px-4 py-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-black transition-colors text-red-300 border border-slate-500">
               취소
             </button>
             <button 
               onClick={handleConfirmLevelUp}
               disabled={selectionMode.selectedIds.length === 0}
-              className="flex-1 md:flex-none px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400"
+              className="flex-1 md:flex-none px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400"
             >
               성장 진행 ({selectionMode.selectedIds.length}장)
             </button>

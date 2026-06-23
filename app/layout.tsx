@@ -9,7 +9,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 사이드바 상태 관리 (기본값: 열림)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
@@ -111,7 +110,6 @@ export default function RootLayout({
         {/* 💻 오른쪽 메인 컨텐츠 영역 */}
         <main className="flex-1 h-screen overflow-y-auto relative">
           
-          {/* 💡 버튼 위치 개선: 사이드바 상태에 맞춰 가변적으로 가로축 이동 (left-[276px] <-> left-6) */}
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className={`fixed top-6 z-40 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 p-2.5 rounded-xl shadow-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 flex items-center justify-center font-black text-lg w-10 h-10 ${isSidebarOpen ? 'left-[276px]' : 'left-6'}`}
@@ -120,8 +118,8 @@ export default function RootLayout({
             ☰
           </button>
 
-          {/* 메인 콘텐츠 패딩 여백 연동 */}
-          <div className={`p-8 h-full max-w-7xl mx-auto flex flex-col transition-all duration-300 ${isSidebarOpen ? 'pl-20' : 'pl-20'}`}>
+          {/* 💡 수정됨: max-w-[1600px]로 너비 대폭 확장, 사이드바 닫혔을 때 여백 최적화 */}
+          <div className={`p-8 h-full w-full max-w-[1600px] mx-auto flex flex-col transition-all duration-300 ${isSidebarOpen ? '' : 'pl-24'}`}>
             <TopBar />
             <div className="flex-1 min-h-0">
               {children}
