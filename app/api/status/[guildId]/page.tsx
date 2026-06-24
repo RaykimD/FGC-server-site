@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// 타입 정의
 type MemberData = {
   name: string;
   id: string;
@@ -28,7 +27,6 @@ type GuildData = {
   members: MemberData[];
   tools: {
     pickaxe4: string; pickaxe5: string;
-    scythe3: string; scythe4: string; scythe5: string;
   };
 };
 
@@ -36,7 +34,8 @@ const MemberProfile = ({ member, size = 'lg' }: { member: MemberData, size?: 'sm
   const [imgError, setImgError] = useState(false);
   const firstTwo = member.id ? member.id.substring(0, 2).toLowerCase() : '';
   const profileUrl = `https://profile.img.afreecatv.com/LOGO/${firstTwo}/${member.id}/${member.id}.jpg`;
-  const sizeClasses = size === 'lg' ? 'w-16 h-16 text-2xl border-2' : 'w-9 h-9 text-sm border';
+  
+  const sizeClasses = size === 'lg' ? 'w-24 h-24 text-4xl border-4' : 'w-12 h-12 text-lg border-2';
 
   if (!member.id || imgError) {
     return (
@@ -62,11 +61,11 @@ const StatBox = ({ icon, label, value, subValue, variant = 'default' }: { icon?:
   if (variant === 'highlight') colors = 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-500/60 text-blue-900 dark:text-blue-300 font-black ring-1 ring-blue-300/30 dark:ring-blue-500/30';
 
   return (
-    <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center gap-1 transition-all shadow-sm ${colors}`}>
-      <span className="text-[11px] sm:text-xs font-bold opacity-80 tracking-tight">{icon ? `${icon} ` : ''}{label}</span>
+    <div className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-1 transition-all shadow-sm ${colors}`}>
+      <span className="text-xs sm:text-sm font-bold opacity-80 tracking-tight">{icon ? `${icon} ` : ''}{label}</span>
       <div className="flex items-baseline gap-1">
-        <span className="text-xs sm:text-sm font-black tracking-tight">{value}</span>
-        {subValue && <span className="text-[9px] opacity-70 font-bold">{subValue}</span>}
+        <span className="text-base sm:text-lg font-black tracking-tight">{value}</span>
+        {subValue && <span className="text-[10px] sm:text-xs opacity-70 font-bold">{subValue}</span>}
       </div>
     </div>
   );
@@ -99,59 +98,43 @@ export default function GuildDetailPage() {
   }, [guildId]);
 
   if (isLoading) {
-    return <div className="h-full flex items-center justify-center text-slate-400 font-bold animate-fade-in">시트 데이터를 불러오는 중입니다...</div>;
+    return <div className="h-full flex items-center justify-center text-slate-400 font-bold animate-fade-in text-lg">시트 데이터를 불러오는 중입니다...</div>;
   }
 
   if (!guild) {
     return (
       <div className="h-full flex flex-col items-center justify-center animate-fade-in">
-        <span className="text-5xl mb-4">🔍</span>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">길드 정보를 찾을 수 없습니다.</h1>
-        <Link href="/status" className="mt-6 px-6 py-2 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition-colors shadow-sm">길드 목록으로 돌아가기</Link>
+        <span className="text-6xl mb-4">🔍</span>
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-white">길드 정보를 찾을 수 없습니다.</h1>
+        <Link href="/status" className="mt-6 px-8 py-3 bg-blue-500 text-white font-bold text-lg rounded-xl hover:bg-blue-600 transition-colors shadow-sm">길드 목록으로 돌아가기</Link>
       </div>
     );
   }
 
   return (
     <div className="animate-fade-in pb-10 h-full flex flex-col">
-      <div className="mb-6 shrink-0 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-4">
+      <div className="mb-8 shrink-0 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
         <div className="flex-1 w-full overflow-hidden">
-          <Link href="/status" className="text-xs font-black text-slate-400 hover:text-blue-500 transition-colors mb-2 inline-block">← 길드 현황 목록</Link>
+          <Link href="/status" className="text-sm font-black text-slate-400 hover:text-blue-500 transition-colors mb-3 inline-block">← 길드 현황 목록</Link>
           
-          <div className="flex flex-col lg:flex-row lg:items-center gap-4 mt-1">
-            {/* 타이틀 파트 */}
-            <div className="flex items-center gap-4 shrink-0">
-              <div className="w-14 h-14 rounded-2xl bg-[#f8fafc] dark:bg-gray-800/80 border border-slate-200 dark:border-gray-700 flex items-center justify-center text-2xl shadow-sm">🛡️</div>
+          <div className="flex flex-col lg:flex-row lg:items-center gap-6 mt-1">
+            <div className="flex items-center gap-5 shrink-0">
+              <div className="w-20 h-20 rounded-2xl bg-[#f8fafc] dark:bg-gray-800/80 border border-slate-200 dark:border-gray-700 flex items-center justify-center text-4xl shadow-sm">🛡️</div>
               <div>
-                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{guild.name}</h1>
-                <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mt-0.5">총 인원: {guild.members.length}명</p>
+                <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{guild.name}</h1>
+                <p className="text-lg font-bold text-blue-600 dark:text-blue-400 mt-1">총 인원: {guild.members.length}명</p>
               </div>
             </div>
             
-            {/* 💡 업데이트된 도구 현황판 파트 */}
-            <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
-              <div className="flex gap-2 bg-[#f8fafc] dark:bg-[#1a1a1a] p-2 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm whitespace-nowrap shrink-0">
-                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-700 flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">4강 곡괭이</span>
-                  <span className="text-sm font-black text-amber-600">{guild.tools.pickaxe4}</span>
+            <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-2 lg:pb-0">
+              <div className="flex gap-3 bg-[#f8fafc] dark:bg-[#1a1a1a] p-3 rounded-2xl border border-slate-200 dark:border-gray-700 shadow-sm whitespace-nowrap shrink-0">
+                <div className="px-5 py-2.5 bg-white dark:bg-gray-800 rounded-xl border border-slate-100 dark:border-gray-700 flex items-center gap-3">
+                  <span className="text-sm font-bold text-slate-500 dark:text-gray-400">4강 곡괭이</span>
+                  <span className="text-xl font-black text-amber-600">{guild.tools.pickaxe4}</span>
                 </div>
-                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-700 flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">5강 곡괭이</span>
-                  <span className="text-sm font-black text-red-600">{guild.tools.pickaxe5}</span>
-                </div>
-              </div>
-              <div className="flex gap-2 bg-[#f8fafc] dark:bg-[#1a1a1a] p-2 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm whitespace-nowrap shrink-0">
-                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-700 flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">3강 낫</span>
-                  <span className="text-sm font-black text-emerald-500">{guild.tools.scythe3}</span>
-                </div>
-                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-700 flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">4강 낫</span>
-                  <span className="text-sm font-black text-teal-600">{guild.tools.scythe4}</span>
-                </div>
-                <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-slate-100 dark:border-gray-700 flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-gray-400">5강 낫</span>
-                  <span className="text-sm font-black text-cyan-600">{guild.tools.scythe5}</span>
+                <div className="px-5 py-2.5 bg-white dark:bg-gray-800 rounded-xl border border-slate-100 dark:border-gray-700 flex items-center gap-3">
+                  <span className="text-sm font-bold text-slate-500 dark:text-gray-400">5강 곡괭이</span>
+                  <span className="text-xl font-black text-red-600">{guild.tools.pickaxe5}</span>
                 </div>
               </div>
             </div>
@@ -159,37 +142,39 @@ export default function GuildDetailPage() {
           </div>
         </div>
         
-        <button onClick={() => setIsListView(!isListView)} className="shrink-0 flex items-center gap-2 px-5 py-2.5 bg-[#f8fafc] dark:bg-gray-800/80 border border-slate-300 dark:border-gray-700 rounded-xl text-sm font-black text-slate-800 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700 transition-all shadow-sm">
+        <button onClick={() => setIsListView(!isListView)} className="shrink-0 flex items-center gap-3 px-6 py-3.5 bg-[#f8fafc] dark:bg-gray-800/80 border border-slate-300 dark:border-gray-700 rounded-xl text-base font-black text-slate-800 dark:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-700 transition-all shadow-sm">
           {isListView ? '🃏 카드형으로 보기' : '📊 한눈에 보기'}
         </button>
       </div>
 
       <div className="flex-1 min-h-0">
-        {/* 카드형 뷰 */}
         {!isListView && (
-          <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
-            <div className="flex flex-col gap-4">
+          <div className="h-full overflow-y-auto pr-3 custom-scrollbar">
+            <div className="flex flex-col gap-6">
               {guild.members.map((member: MemberData, idx: number) => (
-                <div key={idx} className="bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-2xl p-5 border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col xl:flex-row gap-5 hover:border-blue-400 transition-all">
-                  <div className="flex items-center xl:flex-col xl:items-start gap-4 xl:w-52 shrink-0 xl:border-r border-b xl:border-b-0 border-slate-200 dark:border-gray-800 pb-4 xl:pb-0 xl:pr-5">
-                    <MemberProfile member={member} />
+                <div key={idx} className="bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-3xl p-6 border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col xl:flex-row gap-6 hover:border-blue-400 transition-all">
+                  <div className="flex items-center xl:flex-col xl:items-start gap-5 xl:w-64 shrink-0 xl:border-r border-b xl:border-b-0 border-slate-200 dark:border-gray-800 pb-5 xl:pb-0 xl:pr-6">
+                    <MemberProfile member={member} size="lg" />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-black text-xl text-slate-950 dark:text-white truncate tracking-tight">{member.name}</span>
-                        {member.role === '수장' && <span className="text-[10px] font-black px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 shrink-0">수장</span>}
-                        {member.role === '퇴역군인' && <span className="text-[10px] font-black px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/50 text-amber-700 shrink-0">퇴역</span>}
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="font-black text-3xl text-slate-950 dark:text-white truncate tracking-tight">{member.name}</span>
+                        {member.role && member.role !== '길드원' && (
+                          <span className="text-sm font-black px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 shrink-0 border border-blue-200 dark:border-blue-700/50">
+                            {member.role}
+                          </span>
+                        )}
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold px-3 py-1 rounded-md bg-purple-50 dark:bg-purple-900/40 text-purple-700 border border-purple-100 dark:border-purple-700/50 shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold px-4 py-1.5 rounded-lg bg-purple-50 dark:bg-purple-900/40 text-purple-700 border border-purple-100 dark:border-purple-700/50 shadow-sm">
                           {member.job ? `${member.job} (${member.jobTier})` : '직업 미정'}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex-1 flex flex-col md:flex-row gap-4 min-w-0">
-                    <div className="flex-1 flex flex-col justify-center gap-2.5">
-                      <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                  <div className="flex-1 flex flex-col md:flex-row gap-5 min-w-0">
+                    <div className="flex-1 flex flex-col justify-center gap-3.5">
+                      <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
                         <StatBox icon="⚔️" label="무기" value={member.equip.weapon} subValue={`Atk ${member.equip.weaponAtk}`} variant="weapon" />
                         <StatBox icon="🪖" label="투구" value={member.equip.helmet} variant="armor" />
                         <StatBox icon="👕" label="갑옷" value={member.equip.armor} variant="armor" />
@@ -198,7 +183,7 @@ export default function GuildDetailPage() {
                         <StatBox icon="💍" label="반지 1" value={member.equip.ring1} variant="ring" />
                         <StatBox icon="💍" label="반지 2" value={member.equip.ring2} variant="ring" />
                       </div>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                         <StatBox label="내공" value={member.stats.ki} variant="cyan" />
                         <StatBox label="회피" value={member.stats.evasion} variant="emerald" />
                         <StatBox label="공속" value={member.stats.atkSpeed} variant="emerald" />
@@ -208,14 +193,14 @@ export default function GuildDetailPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-row md:flex-col gap-2 w-full md:w-32 shrink-0 justify-center">
-                      <div className="flex-1 bg-emerald-50/60 dark:bg-emerald-950/30 p-2.5 rounded-xl border border-emerald-200/60 flex flex-col items-center justify-center text-center shadow-sm">
-                        <span className="text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-400 font-bold mb-1">🏃 경공비급</span>
-                        <span className="text-xs sm:text-sm font-black text-emerald-800 dark:text-emerald-300">{member.special.lightfoot}</span>
+                    <div className="flex flex-row md:flex-col gap-3 w-full md:w-40 shrink-0 justify-center">
+                      <div className="flex-1 bg-emerald-50/60 dark:bg-emerald-950/30 p-4 rounded-2xl border border-emerald-200/60 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 font-bold mb-2">🏃 경공비급</span>
+                        <span className="text-base sm:text-xl font-black text-emerald-800 dark:text-emerald-300">{member.special.lightfoot}</span>
                       </div>
-                      <div className="flex-1 bg-amber-50/60 dark:bg-amber-950/30 p-2.5 rounded-xl border border-amber-200/60 flex flex-col items-center justify-center text-center shadow-sm">
-                        <span className="text-[10px] sm:text-xs text-amber-700 dark:text-amber-400 font-bold mb-1">🐎 탈것</span>
-                        <span className="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300">{member.special.mount}</span>
+                      <div className="flex-1 bg-amber-50/60 dark:bg-amber-950/30 p-4 rounded-2xl border border-amber-200/60 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span className="text-xs sm:text-sm text-amber-700 dark:text-amber-400 font-bold mb-2">🐎 탈것</span>
+                        <span className="text-base sm:text-xl font-black text-amber-800 dark:text-amber-300">{member.special.mount}</span>
                       </div>
                     </div>
                   </div>
@@ -225,65 +210,64 @@ export default function GuildDetailPage() {
           </div>
         )}
 
-        {/* 한눈에 보기 뷰 */}
         {isListView && (
-          <div className="h-full bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-2xl border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col overflow-hidden">
+          <div className="h-full bg-[#f8fafc] dark:bg-[#1a1a1a] rounded-3xl border border-slate-200 dark:border-gray-800 shadow-sm flex flex-col overflow-hidden">
             <div className="flex-1 overflow-auto custom-scrollbar">
-              <table className="w-full text-sm text-left whitespace-nowrap min-w-[1200px]">
-                <thead className="text-[11px] uppercase bg-slate-100 dark:bg-[#121212] text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-800 sticky top-0 z-10 font-black">
+              <table className="w-full text-base text-left whitespace-nowrap min-w-[1400px]">
+                <thead className="text-xs uppercase bg-slate-100 dark:bg-[#121212] text-slate-600 dark:text-gray-400 border-b border-slate-200 dark:border-gray-800 sticky top-0 z-10 font-black">
                   <tr>
-                    <th className="px-4 py-3 sticky left-0 bg-slate-100 dark:bg-[#121212] z-20">이름</th>
-                    <th className="px-4 py-3 border-r border-slate-200 dark:border-gray-800">직업</th>
-                    <th className="px-3 py-3 text-center text-rose-700 dark:text-red-400">무기</th>
-                    <th className="px-3 py-3 text-center text-indigo-700 dark:text-indigo-400">투구</th>
-                    <th className="px-3 py-3 text-center text-indigo-700 dark:text-indigo-400">갑옷</th>
-                    <th className="px-3 py-3 text-center text-indigo-700 dark:text-indigo-400">벨트</th>
-                    <th className="px-3 py-3 text-center text-indigo-700 dark:text-indigo-400 border-r border-slate-200 dark:border-gray-800">신발</th>
-                    <th className="px-3 py-3 text-center text-fuchsia-700 dark:text-fuchsia-400">반지 1</th>
-                    <th className="px-3 py-3 text-center text-fuchsia-700 dark:text-fuchsia-400 border-r border-slate-200 dark:border-gray-800">반지 2</th>
-                    <th className="px-3 py-3 text-center text-cyan-700 dark:text-cyan-400">내공</th>
-                    <th className="px-3 py-3 text-center text-emerald-700 dark:text-emerald-400">회피</th>
-                    <th className="px-3 py-3 text-center text-emerald-700 dark:text-emerald-400">공속</th>
-                    <th className="px-3 py-3 text-center text-blue-600 dark:text-blue-400 font-black">합(회+공)</th>
-                    <th className="px-3 py-3 text-center text-red-700 dark:text-rose-400">체력</th>
-                    <th className="px-3 py-3 text-center text-amber-700 dark:text-amber-400 border-r border-slate-200 dark:border-gray-800">운</th>
-                    <th className="px-3 py-3 text-center text-emerald-600 dark:text-emerald-400">경공비급</th>
-                    <th className="px-3 py-3 text-center text-amber-600 dark:text-amber-400">탈것</th>
+                    <th className="px-5 py-4 sticky left-0 bg-slate-100 dark:bg-[#121212] z-20">이름 / 역할</th>
+                    <th className="px-5 py-4 border-r border-slate-200 dark:border-gray-800">직업</th>
+                    <th className="px-4 py-4 text-center text-rose-700 dark:text-red-400">무기</th>
+                    <th className="px-4 py-4 text-center text-indigo-700 dark:text-indigo-400">투구</th>
+                    <th className="px-4 py-4 text-center text-indigo-700 dark:text-indigo-400">갑옷</th>
+                    <th className="px-4 py-4 text-center text-indigo-700 dark:text-indigo-400">벨트</th>
+                    <th className="px-4 py-4 text-center text-indigo-700 dark:text-indigo-400 border-r border-slate-200 dark:border-gray-800">신발</th>
+                    <th className="px-4 py-4 text-center text-fuchsia-700 dark:text-fuchsia-400">반지 1</th>
+                    <th className="px-4 py-4 text-center text-fuchsia-700 dark:text-fuchsia-400 border-r border-slate-200 dark:border-gray-800">반지 2</th>
+                    <th className="px-4 py-4 text-center text-cyan-700 dark:text-cyan-400">내공</th>
+                    <th className="px-4 py-4 text-center text-emerald-700 dark:text-emerald-400">회피</th>
+                    <th className="px-4 py-4 text-center text-emerald-700 dark:text-emerald-400">공속</th>
+                    <th className="px-4 py-4 text-center text-blue-600 dark:text-blue-400 font-black">합(회+공)</th>
+                    <th className="px-4 py-4 text-center text-red-700 dark:text-rose-400">체력</th>
+                    <th className="px-4 py-4 text-center text-amber-700 dark:text-amber-400 border-r border-slate-200 dark:border-gray-800">운</th>
+                    <th className="px-4 py-4 text-center text-emerald-600 dark:text-emerald-400">경공비급</th>
+                    <th className="px-4 py-4 text-center text-amber-600 dark:text-amber-400">탈것</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-gray-800 text-xs font-bold text-slate-800 dark:text-gray-300">
+                <tbody className="divide-y divide-slate-200 dark:divide-gray-800 text-sm font-bold text-slate-800 dark:text-gray-300">
                   {guild.members.map((member: MemberData, idx: number) => (
                     <tr key={idx} className="hover:bg-slate-100/50 dark:hover:bg-gray-800/50 transition-colors">
-                      <td className="px-4 py-2.5 sticky left-0 bg-[#f8fafc] dark:bg-[#1a1a1a] z-10 group-hover:bg-slate-100/50 dark:group-hover:bg-gray-800/50">
-                        <div className="flex items-center gap-3">
+                      <td className="px-5 py-3.5 sticky left-0 bg-[#f8fafc] dark:bg-[#1a1a1a] z-10 group-hover:bg-slate-100/50 dark:group-hover:bg-gray-800/50">
+                        <div className="flex items-center gap-4">
                           <MemberProfile member={member} size="sm" />
                           <div className="flex flex-col">
-                            <span className="font-black text-slate-950 dark:text-white text-sm">{member.name}</span>
-                            <span className="text-[10px] text-slate-400">{member.role}</span>
+                            <span className="font-black text-slate-950 dark:text-white text-base">{member.name}</span>
+                            <span className="text-xs text-blue-500">{member.role}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5 border-r border-slate-200 dark:border-gray-800">
+                      <td className="px-5 py-3.5 border-r border-slate-200 dark:border-gray-800">
                         <div className="flex flex-col">
-                          <span className={member.job ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-400'}>{member.job || '미정'}</span>
-                          <span className="text-[10px] text-slate-400">{member.jobTier}</span>
+                          <span className={member.job ? 'text-purple-600 dark:text-purple-400 font-black text-base' : 'text-slate-400 text-base'}>{member.job || '미정'}</span>
+                          <span className="text-xs text-slate-400">{member.jobTier}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.weapon}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.helmet}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.armor}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.belt}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.shoes}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.equip.ring1}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.ring2}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.ki}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.evasion}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.atkSpeed}</td>
-                      <td className="px-3 py-2.5 text-center font-black text-blue-600 dark:text-blue-400">{member.stats.sum}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300">{member.stats.hp}</td>
-                      <td className="px-3 py-2.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.stats.luck}</td>
-                      <td className="px-3 py-2.5 text-center text-emerald-600 dark:text-emerald-400 font-black">{member.special.lightfoot}</td>
-                      <td className="px-3 py-2.5 text-center text-amber-500 dark:text-amber-400 font-black">{member.special.mount}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.equip.weapon}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.equip.helmet}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.equip.armor}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.equip.belt}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.shoes}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.equip.ring1}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.equip.ring2}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.stats.ki}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.stats.evasion}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.stats.atkSpeed}</td>
+                      <td className="px-4 py-3.5 text-center font-black text-lg text-blue-600 dark:text-blue-400">{member.stats.sum}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300">{member.stats.hp}</td>
+                      <td className="px-4 py-3.5 text-center text-slate-700 dark:text-gray-300 border-r border-slate-200 dark:border-gray-800">{member.stats.luck}</td>
+                      <td className="px-4 py-3.5 text-center text-emerald-600 dark:text-emerald-400 font-black text-base">{member.special.lightfoot}</td>
+                      <td className="px-4 py-3.5 text-center text-amber-500 dark:text-amber-400 font-black text-base">{member.special.mount}</td>
                     </tr>
                   ))}
                 </tbody>

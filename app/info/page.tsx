@@ -27,6 +27,12 @@ export default function InfoHubPage() {
       href: '/api-list',
       color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
     },
+    {
+      title: '💊 영단 정보',
+      desc: '각 영단별 증가 스탯 도감 및 필터 검색',
+      href: '/pill',
+      color: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800',
+    },
   ];
 
   return (

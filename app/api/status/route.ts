@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'; // 💡 무조건 최신 데이터를 가져오도록 강제
-export const revalidate = 0; // 💡 캐싱 완전 삭제 (실시간 반영)
-
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
 const GUILDS_INFO = [
@@ -22,17 +19,12 @@ async function getSoopLiveStatus(bjId: string) {
   if (!bjId) return { isLive: false, viewers: 0 };
   try {
     const res = await fetch(`https://bjapi.afreecatv.com/api/${bjId}/station`, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-      next: { revalidate: 90 }
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      next: { revalidate: 600 } 
     });
     if (!res.ok) return { isLive: false, viewers: 0 };
     const json = await res.json();
-    if (json.broad) {
-      return {
-        isLive: true,
-        viewers: json.broad.current_sum_viewer || 0
-      };
-    }
+    if (json.broad) return { isLive: true, viewers: json.broad.current_sum_viewer || 0 };
     return { isLive: false, viewers: 0 };
   } catch {
     return { isLive: false, viewers: 0 };
@@ -44,15 +36,14 @@ export async function GET() {
     const allGuildsData = await Promise.all(GUILDS_INFO.map(async (guild) => {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
-      // 💡 여기서 1년(31536000)으로 되어있던 캐싱을 0으로 고쳤습니다!
-      const res = await fetch(url, { next: { revalidate: 0 }, cache: 'no-store' });
+      const res = await fetch(url, { next: { revalidate: 600 } });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
 
       let headerRowIndex = -1;
       let nameColIndex = -1;
       const rawMembers = [];
-      const tools = { pickaxe3: '0', pickaxe4: '0', pickaxe5: '0', scythe3: '0', scythe4: '0', scythe5: '0' };
+      const tools = { pickaxe3: '0', pickaxe4: '0', pickaxe5: '0' };
 
       for (let i = 0; i < rows.length; i++) {
         if (!rows[i].trim()) continue;
@@ -71,9 +62,6 @@ export async function GET() {
           if (val.includes('3강곡')) tools.pickaxe3 = cols[j + 1] || '0';
           if (val.includes('4강곡')) tools.pickaxe4 = cols[j + 1] || '0';
           if (val.includes('5강곡')) tools.pickaxe5 = cols[j + 1] || '0';
-          if (val.includes('3강낫')) tools.scythe3 = cols[j + 1] || '0';
-          if (val.includes('4강낫')) tools.scythe4 = cols[j + 1] || '0';
-          if (val.includes('5강낫')) tools.scythe5 = cols[j + 1] || '0';
         }
       }
 
@@ -86,10 +74,12 @@ export async function GET() {
         const name = cols[targetCol];
         if (!name || name === '') continue;
 
+        const roleValue = cols[3] && cols[3].trim() !== '' ? cols[3].trim() : '길드원';
+
         rawMembers.push({
           name: name,
           id: cols[targetCol + 1] || '',
-          role: cols[targetCol + 2] || '길드원',
+          role: roleValue,
           job: cols[targetCol + 3] || '',
           jobTier: cols[targetCol + 4] || '0차',
           equip: {
@@ -123,7 +113,6 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: allGuildsData });
   } catch (error) {
-    console.error('구글 시트 연동 에러:', error);
-    return NextResponse.json({ success: false, error: '데이터를 불러오지 못했습니다.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: '데이터 로드 실패' }, { status: 500 });
   }
 }

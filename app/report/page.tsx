@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 type MemberData = {
   name: string; id: string; role: string; job: string; jobTier: string;
@@ -32,10 +32,14 @@ const REPORT_CATEGORIES = [
   { id: 'boss', name: '보스 루팅 제보' },
 ];
 
-const BOSS_TYPES = ['쥐', '산삼', '검성', '설호(루팅)', '설호(귀속)', '코끼리(루팅)', '코끼리(귀속)'];
-const BOSS_TIMES = ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00'];
+const getTodayStr = () => {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${m}/${day}`;
+};
+const TODAY_STR = getTodayStr();
 
-// 💡 구글 시트가 자동으로 변환한 날짜 문자열을 예쁘게 포맷팅해주는 함수
 const formatDisplayValue = (val: string) => {
   if (!val) return '';
   if (val.includes('T') && val.endsWith('Z')) {
@@ -54,6 +58,8 @@ const formatDisplayValue = (val: string) => {
 
 export default function ReportPage() {
   const [guilds, setGuilds] = useState<GuildData[]>([]);
+  const [bosses, setBosses] = useState<string[]>([]);
+  const [guildMap, setGuildMap] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [reports, setReports] = useState<ReportItem[]>([]);
@@ -69,11 +75,11 @@ export default function ReportPage() {
   const [remarks, setRemarks] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const todayDate = `${new Date().getMonth() + 1}월 ${new Date().getDate()}일`;
-  const [bossDate, setBossDate] = useState(todayDate);
+  const [bossDate, setBossDate] = useState(TODAY_STR);
   const [bossTime, setBossTime] = useState('');
   const [bossType, setBossType] = useState('');
   const [bossGuild, setBossGuild] = useState('');
+  const [bossPlayer, setBossPlayer] = useState('');
   const [isBossSubmitting, setIsBossSubmitting] = useState(false);
 
   const [bugTitle, setBugTitle] = useState('');
@@ -83,29 +89,69 @@ export default function ReportPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statusRes, reportRes] = await Promise.all([
-          fetch('/api/status'),
-          fetch('/api/report')
+        const [statusRes, reportRes, optionsRes] = await Promise.all([
+          fetch('/api/status').catch(() => null),
+          fetch('/api/report').catch(() => null),
+          fetch('/api/report-options').catch(() => null)
         ]);
-        const statusJson = await statusRes.json();
-        const reportJson = await reportRes.json();
         
-        if (statusJson.success) setGuilds(statusJson.data);
-        if (reportJson.success) {
-          const formattedReports = reportJson.data.map((item: any) => {
-            const catObj = REPORT_CATEGORIES.find(c => c.id === item.categoryName);
-            const guildObj = statusJson.data.find((g: any) => g.id === item.guildName);
-            return { ...item, guildName: guildObj?.name || item.guildName, categoryName: catObj?.name || item.categoryName };
-          });
-          setReports(formattedReports);
+        let fetchedGuilds: any[] = [];
+        
+        if (statusRes && statusRes.ok) {
+          const statusJson = await statusRes.json();
+          if (statusJson.success) {
+            fetchedGuilds = statusJson.data;
+            setGuilds(fetchedGuilds);
+          }
         }
-      } catch (e) { console.error(e); } finally { setIsLoading(false); }
+        
+        if (reportRes && reportRes.ok) {
+          const reportJson = await reportRes.json();
+          if (reportJson.success) {
+            const formattedReports = reportJson.data.map((item: any) => {
+              const catObj = REPORT_CATEGORIES.find(c => c.id === item.categoryName);
+              const guildObj = fetchedGuilds.find((g: any) => g.id === item.guildName);
+              return { ...item, guildName: guildObj?.name || item.guildName, categoryName: catObj?.name || item.categoryName };
+            });
+            setReports(formattedReports);
+          }
+        }
+
+        if (optionsRes && optionsRes.ok) {
+          const optionsJson = await optionsRes.json();
+          if (optionsJson.bosses) setBosses(optionsJson.bosses);
+          if (optionsJson.guildMap) {
+            setGuildMap(optionsJson.guildMap);
+            const availableGuilds = Object.keys(optionsJson.guildMap);
+            if (availableGuilds.length > 0) {
+              setBossGuild(availableGuilds[0]);
+            }
+          }
+          if (optionsJson.bosses?.length > 0) setBossType(optionsJson.bosses[0]);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
   }, []);
 
   const currentGuild = guilds.find(g => g.id === selectedGuild);
   const members = currentGuild ? currentGuild.members : [];
+
+  const filteredPlayers: string[] = useMemo(() => {
+    return guildMap[bossGuild] || [];
+  }, [guildMap, bossGuild]);
+
+  useEffect(() => {
+    if (filteredPlayers.length > 0) {
+      setBossPlayer(filteredPlayers[0]);
+    } else {
+      setBossPlayer('');
+    }
+  }, [filteredPlayers]);
 
   useEffect(() => {
     if (selectedGuild && selectedMember && selectedCategory) {
@@ -145,7 +191,16 @@ export default function ReportPage() {
       const res = await fetch('/api/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guild: selectedGuild, member: selectedMember, category: selectedCategory, oldValue, newValue, proofLink, remarks })
+        body: JSON.stringify({ 
+          type: 'stat', 
+          guild: selectedGuild, 
+          member: selectedMember, 
+          category: selectedCategory, 
+          oldValue, 
+          newValue, 
+          proofLink, 
+          remarks 
+        })
       });
       const result = await res.json();
       if (result.success) {
@@ -157,30 +212,23 @@ export default function ReportPage() {
 
   const handleBossSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bossDate || !bossTime || !bossType || !bossGuild) {
+    if (!bossDate || !bossTime || !bossType || !bossGuild || !bossPlayer) {
       alert('모든 항목을 입력해주세요.'); return;
     }
     setIsBossSubmitting(true);
     try {
-      const guildName = guilds.find(g => g.id === bossGuild)?.name || bossGuild;
-
       await fetch('/api/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          guild: bossGuild, 
-          member: '보스 루팅', 
+          type: 'boss',
           category: 'boss', 
-          oldValue: `${bossDate} ${bossTime}`, 
-          newValue: bossType, 
-          proofLink: '', remarks: '' 
+          date: bossDate,
+          time: bossTime,
+          bossName: bossType,
+          guild: bossGuild,
+          player: bossPlayer
         })
-      });
-
-      await fetch('/api/boss-discord', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: bossDate, time: bossTime, boss: bossType, guild: guildName })
       });
 
       alert('보스 루팅 제보가 완료되었습니다!');
@@ -195,16 +243,18 @@ export default function ReportPage() {
     }
     setIsBugSubmitting(true);
     try {
-      const res = await fetch('/api/bug', {
+      await fetch('/api/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: bugTitle, content: bugContent })
+        body: JSON.stringify({ 
+          type: 'bug', 
+          category: 'bug',
+          title: bugTitle, 
+          content: bugContent 
+        })
       });
-      const result = await res.json();
-      if (result.success) {
-        alert('버그/건의 제보가 성공적으로 전송되었습니다! 감사합니다.');
-        setBugTitle(''); setBugContent(''); setShowForm(false);
-      } else { alert('제보 전송 실패'); }
+      alert('버그/건의 제보가 성공적으로 전송되었습니다! 감사합니다.');
+      setBugTitle(''); setBugContent(''); setShowForm(false);
     } catch { alert('서버 통신 에러'); } finally { setIsBugSubmitting(false); }
   };
 
@@ -226,16 +276,36 @@ export default function ReportPage() {
           <div className="bg-white dark:bg-[#1e1e1e] rounded-2xl border border-slate-200 dark:border-gray-800 p-4 space-y-2">
             {reports.length > 0 ? reports.map((report) => (
               <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-[#121212] border border-slate-100 dark:border-gray-800 gap-4">
-                <div>
-                  <p className="text-xs font-bold text-slate-500 dark:text-gray-400 mb-0.5">[{report.guildName}] {report.memberName}</p>
-                  <p className="text-sm font-black text-slate-800 dark:text-gray-200">{report.categoryName}</p>
-                </div>
-                <div className="flex items-center gap-3 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-gray-700 shadow-inner">
-                  {/* 💡 기존 값에 formatDisplayValue를 씌워서 깔끔하게 표시 */}
-                  <span className="text-sm font-bold text-slate-500 dark:text-gray-400">{formatDisplayValue(report.oldValue)}</span>
-                  <span>➡️</span>
-                  <span className="text-base font-black text-blue-600 dark:text-blue-400">{report.newValue}</span>
-                </div>
+                
+                {/* 💡 보스 제보일 때의 특수 UI 디자인 (화살표 제거, 루팅유저 추가) */}
+                {report.categoryName === '보스 루팅 제보' || report.categoryName === 'boss' ? (
+                  <>
+                    <div>
+                      <p className="text-xs font-bold text-purple-500 dark:text-purple-400 mb-0.5">[{report.guildName}] 보스 루팅</p>
+                      <p className="text-sm font-black text-slate-800 dark:text-gray-200">⚔️ {report.newValue}</p>
+                    </div>
+                    <div className="flex items-center gap-3 bg-purple-50 dark:bg-purple-900/20 px-4 py-2.5 rounded-lg border border-purple-200 dark:border-purple-800/50 shadow-inner">
+                      <span className="text-sm font-bold text-slate-600 dark:text-gray-300">{formatDisplayValue(report.oldValue)}</span>
+                      <span className="text-sm font-black text-purple-700 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/50 px-2 py-1 rounded-md shadow-sm">
+                        👤 {report.memberName}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  /* 기존 인게임 스탯 제보 UI */
+                  <>
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 dark:text-gray-400 mb-0.5">[{report.guildName}] {report.memberName}</p>
+                      <p className="text-sm font-black text-slate-800 dark:text-gray-200">{report.categoryName}</p>
+                    </div>
+                    <div className="flex items-center gap-3 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-gray-700 shadow-inner">
+                      <span className="text-sm font-bold text-slate-500 dark:text-gray-400">{formatDisplayValue(report.oldValue)}</span>
+                      <span>➡️</span>
+                      <span className="text-base font-black text-blue-600 dark:text-blue-400">{report.newValue}</span>
+                    </div>
+                  </>
+                )}
+
               </div>
             )) : <div className="py-12 text-center text-slate-400 font-bold">대기 중인 제보 없음</div>}
           </div>
@@ -245,24 +315,9 @@ export default function ReportPage() {
            
            <div className="flex justify-between items-start mb-6">
               <div className="flex gap-4">
-                <button 
-                  onClick={() => setActiveTab('boss')} 
-                  className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'boss' ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}
-                >
-                  🐉 보스 루팅
-                </button>
-                <button 
-                  onClick={() => setActiveTab('info')} 
-                  className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'info' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}
-                >
-                  📊 인게임 스탯 갱신
-                </button>
-                <button 
-                  onClick={() => setActiveTab('bug')} 
-                  className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'bug' ? 'border-red-500 text-red-600 dark:text-red-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}
-                >
-                  🐛 사이트 버그제보
-                </button>
+                <button onClick={() => setActiveTab('boss')} className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'boss' ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}>🐉 보스 루팅</button>
+                <button onClick={() => setActiveTab('info')} className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'info' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}>📊 인게임 스탯 갱신</button>
+                <button onClick={() => setActiveTab('bug')} className={`text-lg font-black pb-2 px-1 transition-all border-b-2 ${activeTab === 'bug' ? 'border-red-500 text-red-600 dark:text-red-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400'}`}>🐛 사이트 버그제보</button>
               </div>
               <button onClick={() => setShowForm(false)} className="text-sm font-bold text-slate-500 hover:text-red-500 transition-colors mt-1 border border-slate-200 dark:border-gray-700 px-3 py-1 rounded-lg">✕ 취소</button>
            </div>
@@ -312,29 +367,34 @@ export default function ReportPage() {
              <form onSubmit={handleBossSubmit} className="space-y-6 animate-fade-in pt-2">
                <div className="grid grid-cols-2 gap-4">
                  <div>
-                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">날짜</label>
-                   <input type="text" value={bossDate} onChange={(e) => setBossDate(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none" />
+                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">처치 날짜</label>
+                   <input type="text" value={bossDate} onChange={(e) => setBossDate(e.target.value)} placeholder="ex) 06/24" required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none" />
                  </div>
                  <div>
-                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">시간대</label>
-                   <select value={bossTime} onChange={(e) => setBossTime(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
+                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">처치 시간대</label>
+                   <input type="text" placeholder="ex) 15:30" value={bossTime} onChange={(e) => setBossTime(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none" />
+                 </div>
+               </div>
+               <div className="grid grid-cols-2 gap-4">
+                 <div>
+                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">보스 종류</label>
+                   <select value={bossType} onChange={(e) => setBossType(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
                      <option value="">선택하세요</option>
-                     {BOSS_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                     {bosses.map((b, idx) => <option key={idx} value={b}>{b}</option>)}
+                   </select>
+                 </div>
+                 <div>
+                   <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">처치/루팅 길드</label>
+                   <select value={bossGuild} onChange={(e) => { setBossGuild(e.target.value); }} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
+                     {Object.keys(guildMap).map((gName, idx) => <option key={idx} value={gName}>{gName}</option>)}
                    </select>
                  </div>
                </div>
                <div>
-                 <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">보스 종류</label>
-                 <select value={bossType} onChange={(e) => setBossType(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 align-middle dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
-                   <option value="">선택하세요</option>
-                   {BOSS_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
-                 </select>
-               </div>
-               <div>
-                 <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">처치/루팅 길드</label>
-                 <select value={bossGuild} onChange={(e) => setBossGuild(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
-                   <option value="">선택하세요</option>
-                   {guilds.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                 <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">최종 루팅 플레이어</label>
+                 <select value={bossPlayer} onChange={(e) => setBossPlayer(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
+                   {filteredPlayers.map((pName, idx) => <option key={idx} value={pName}>{pName}</option>)}
+                   {filteredPlayers.length === 0 && <option value="">선택한 길드에 인원이 없습니다</option>}
                  </select>
                </div>
                <button type="submit" disabled={isBossSubmitting} className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 rounded-xl shadow-md transition-all">
