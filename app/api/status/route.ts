@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server';
 
+// 💡 넥스트JS의 라우트 캐싱을 강제로 끄고 최신 코드를 반영시키는 마법의 코드
+export const dynamic = 'force-dynamic';
+
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
+// 👇 방장님이 원하셨던 길드명으로 완벽하게 세팅해 두었습니다!
 const GUILDS_INFO = [
-  { id: 'SEONGTAE', name: '성태 길드', sheetName: '태산' },
-  { id: 'MANSIK', name: '만식 길드', sheetName: '만월' },
+  { id: 'SEONGTAE', name: '태산', sheetName: '태산' },
+  { id: 'MANSIK', name: '만월', sheetName: '만월' },
   { id: 'OAH', name: '오아 길드', sheetName: '오아길드' },
-  { id: 'SOOPI', name: '수피 길드', sheetName: '하북펭가' },
+  { id: 'SOOPI', name: '하북펭가', sheetName: '하북펭가' },
   { id: 'CEOPARK', name: '사장 길드', sheetName: '사장길드' },
-  { id: 'DOHYUN', name: '도현 길드', sheetName: '도황' }
+  { id: 'DOHYUN', name: '도황', sheetName: '도황' }
 ];
 
 const parseCSVRow = (row: string) => {
@@ -36,6 +40,7 @@ export async function GET() {
     const allGuildsData = await Promise.all(GUILDS_INFO.map(async (guild) => {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
+      // 구글 시트 통신은 10분(600초) 캐싱 유지 -> 서버 렉 방지
       const res = await fetch(url, { next: { revalidate: 600 } });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
@@ -113,6 +118,6 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: allGuildsData });
   } catch (error) {
-    return NextResponse.json({ success: false, error: '데이터 로드 실패' }, { status: 500 });
+    return NextResponse.json({ success: false, error: '데이터를 불러오지 못했습니다.' }, { status: 500 });
   }
 }

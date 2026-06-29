@@ -85,7 +85,8 @@ export default function StatusPage() {
                       </div>
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-center space-y-4">
+                    {/* 👇 justify-center를 justify-start로 변경하여 상단부터 차곡차곡 예쁘게 쌓이도록 해결! */}
+                    <div className="flex-1 flex flex-col justify-start space-y-4">
                       {leader && (
                         <div className="flex items-center bg-blue-50 dark:bg-blue-900/30 px-5 py-4 rounded-2xl border border-blue-200 dark:border-blue-500/40">
                           <span className="w-20 shrink-0 text-base font-black text-blue-600 dark:text-blue-400">👑 수장</span>
@@ -101,13 +102,14 @@ export default function StatusPage() {
                           <span className="w-20 shrink-0 pt-2 text-base font-black text-amber-600 dark:text-amber-400">🎖️ 멤버</span>
                           <div className="flex-1 flex flex-col gap-4 items-start">
                             {otherMembers.map((m: any) => (
-                              <div key={m.name} className="flex items-center justify-between w-full">
+                              <div key={m.name} className="flex items-center justify-between w-full gap-2">
                                 <div className="flex items-center gap-4">
                                   <MiniProfile member={m} />
                                   <span className="font-black text-lg text-slate-800 dark:text-gray-200">{m.name}</span>
                                 </div>
+                                {/* 👇 배지가 찌그러지지 않도록 whitespace-nowrap과 shrink-0 추가 */}
                                 {m.role && m.role !== '길드원' && (
-                                  <span className="text-xs font-black px-2.5 py-1 rounded-md bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 border border-slate-300 dark:border-gray-700">
+                                  <span className="text-xs font-black px-2.5 py-1 rounded-md bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 border border-slate-300 dark:border-gray-700 whitespace-nowrap shrink-0">
                                     {m.role}
                                   </span>
                                 )}
@@ -116,7 +118,7 @@ export default function StatusPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="flex justify-center items-center bg-slate-100/70 dark:bg-gray-800/30 px-5 py-4 rounded-2xl border border-slate-200 dark:border-gray-700 border-dashed">
+                        <div className="flex justify-center items-center bg-slate-100/70 dark:bg-gray-800/30 px-5 py-4 rounded-2xl border border-slate-200 dark:border-gray-700 border-dashed mt-2">
                           <span className="text-base font-bold text-slate-400 dark:text-gray-500">합류한 멤버 없음</span>
                         </div>
                       )}
