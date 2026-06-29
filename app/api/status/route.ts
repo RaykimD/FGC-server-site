@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server';
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
 const GUILDS_INFO = [
-  { id: 'SEONGTAE', name: '성태 길드', sheetName: '성태길드' },
-  { id: 'MANSIK', name: '만식 길드', sheetName: '만식길드' },
+  { id: 'SEONGTAE', name: '성태 길드', sheetName: '태산' },
+  { id: 'MANSIK', name: '만식 길드', sheetName: '만월' },
   { id: 'OAH', name: '오아 길드', sheetName: '오아길드' },
-  { id: 'SOOPI', name: '수피 길드', sheetName: '수피길드' },
+  { id: 'SOOPI', name: '수피 길드', sheetName: '하북펭가' },
   { id: 'CEOPARK', name: '사장 길드', sheetName: '사장길드' },
-  { id: 'DOHYUN', name: '도현 길드', sheetName: '도현길드' }
+  { id: 'DOHYUN', name: '도현 길드', sheetName: '도황' }
 ];
 
 const parseCSVRow = (row: string) => {
