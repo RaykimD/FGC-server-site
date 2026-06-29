@@ -14,20 +14,14 @@ type GuildData = {
   members: any[];
 };
 
-const GUILDS_INFO = [
-  { id: 'SEONGTAE', name: '성태 길드' },
-  { id: 'MANSIK', name: '만식 길드' },
-  { id: 'OAH', name: '오아 길드' },
-  { id: 'SOOPI', name: '수피 길드' },
-  { id: 'CEOPARK', name: '사장 길드' },
-  { id: 'DOHYUN', name: '도현 길드' }
-];
-
 export default function MultiViewPage() {
   const [allStreamers, setAllStreamers] = useState<Streamer[]>([]);
   const [selectedStreamers, setSelectedStreamers] = useState<Streamer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGuildFilter, setSelectedGuildFilter] = useState('전체');
+  
+  // 💡 고정된 배열 대신, API에서 가져온 길드 목록을 담을 state를 추가했습니다!
+  const [dynamicGuilds, setDynamicGuilds] = useState<{id: string, name: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const playerAreaRef = useRef<HTMLDivElement>(null);
@@ -40,7 +34,12 @@ export default function MultiViewPage() {
         
         if (json.success) {
           const list: Streamer[] = [];
+          const fetchedGuilds: {id: string, name: string}[] = [];
+
           json.data.forEach((guild: GuildData) => {
+            // 💡 API에서 가져온 길드 이름들을 배열에 차곡차곡 저장합니다.
+            fetchedGuilds.push({ id: guild.id, name: guild.name });
+
             guild.members.forEach((m) => {
               list.push({
                 name: m.name,
@@ -58,6 +57,7 @@ export default function MultiViewPage() {
           });
 
           setAllStreamers(list);
+          setDynamicGuilds(fetchedGuilds); // 💡 완성된 길드 목록을 필터에 적용합니다.
         }
       } catch (error) {
         console.error('멤버 정보를 불러오지 못했습니다.', error);
@@ -94,7 +94,6 @@ export default function MultiViewPage() {
     if (isSelected) {
       setSelectedStreamers(prev => prev.filter(s => s.id !== streamer.id));
     } else {
-      // 💡 최대 선택 가능 인원을 4명으로 수정
       if (selectedStreamers.length >= 4) {
         alert('SOOP 플레이어 정책상 멀티뷰는 최대 4명까지만 동시 시청이 가능합니다! 📺');
         return;
@@ -103,7 +102,6 @@ export default function MultiViewPage() {
     }
   };
 
-  // 💡 최대 인원이 4명이므로 그리드 최적화 (1, 2, 4분할 구조)
   const getGridClasses = (count: number) => {
     if (count === 0) return 'flex items-center justify-center';
     if (count === 1) return 'grid-cols-1';
@@ -120,7 +118,6 @@ export default function MultiViewPage() {
           <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
             📺 커스텀 멀티뷰
           </h1>
-          {/* 💡 선택 인원 표시를 4명 기준으로 수정 */}
           <p className="text-xs font-bold text-slate-500 mt-1">
             LIVE 중 <span className="text-red-500 font-extrabold">{totalLiveCount}명</span> / 선택한 방송 ({selectedStreamers.length}/4)
           </p>
@@ -140,13 +137,14 @@ export default function MultiViewPage() {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
             </div>
 
+            {/* 💡 길드 드롭다운도 알아서 동적으로 생성됩니다! */}
             <select
               value={selectedGuildFilter}
               onChange={(e) => setSelectedGuildFilter(e.target.value)}
               className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-xs font-black text-slate-700 dark:text-gray-300 focus:outline-none cursor-pointer"
             >
-              <option value="전체">🛡️ 크루 선택: 전체</option>
-              {GUILDS_INFO.map(g => <option key={g.id} value={g.name}>{g.name}</option>)}
+              <option value="전체">🛡️ 길드 선택: 전체</option>
+              {dynamicGuilds.map(g => <option key={g.id} value={g.name}>{g.name}</option>)}
             </select>
             
             {selectedStreamers.length > 0 && (
@@ -160,7 +158,7 @@ export default function MultiViewPage() {
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2 bg-slate-50/50 dark:bg-black/10">
             {isLoading ? (
-              <div className="text-center py-10 text-sm font-bold text-slate-400 animate-pulse">최종 멤버 및 라이브 상태 동기화 중...</div>
+              <div className="text-center py-10 text-sm font-bold text-slate-400 animate-pulse">상태 동기화 중...</div>
             ) : filteredStreamers.length > 0 ? (
               <div className="space-y-1">
                 {filteredStreamers.map(streamer => {
@@ -221,12 +219,11 @@ export default function MultiViewPage() {
         </div>
       </div>
 
-      {/* 👉 우측: 멀티뷰 플레이어 영역 (전체화면 타겟) */}
+      {/* 👉 우측: 멀티뷰 플레이어 영역 */}
       <div 
         ref={playerAreaRef} 
         className="flex-1 bg-[#0c0c0c] rounded-2xl overflow-hidden border border-slate-200 dark:border-gray-800 shadow-xl relative min-h-[400px] md:min-h-0 flex flex-col group/player"
       >
-        
         {selectedStreamers.length > 0 && (
           <div className="absolute top-3 right-3 z-30 flex items-center gap-2 opacity-30 group-hover/player:opacity-100 transition-opacity duration-300">
             <button 
@@ -244,7 +241,7 @@ export default function MultiViewPage() {
             <h2 className="text-lg font-black text-white mb-2">커스텀 멀티뷰</h2>
             <div className="space-y-1.5 text-xs font-bold text-gray-400 max-w-sm">
               <p>📺 SOOP 정책상 <strong className="text-white">최대 4명</strong>까지 동시 시청이 가능합니다.</p>
-              <p>🖥️ 영상이 로드되면 우측 상단의 전체화면을 활용해 보세요.</p>
+              <p>⚠️ 외부 사이트 시청 시 <strong>720p가 최대 화질</strong>일 수 있습니다.</p>
             </div>
           </div>
         ) : (
@@ -262,11 +259,13 @@ export default function MultiViewPage() {
                     ✕
                   </button>
                 </div>
+                {/* 💡 iframe에 줄 수 있는 최대한의 권한(allow)을 모두 부여했습니다. */}
                 <iframe
                   src={`https://play.afreecatv.com/${streamer.id}/embed`}
                   className="w-full h-full border-none"
                   allowFullScreen
-                  allow="autoplay; fullscreen"
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture; microphone; camera; display-capture; clipboard-write; web-share"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
                 />
               </div>
             ))}
