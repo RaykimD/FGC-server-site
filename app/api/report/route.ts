@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqO3yG_0zeDFRc23VXYYBs8Y6zHRItcKL99Ko3DvKyXCcWAqjAxHm5KWjtscy_wAQ/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIFaNOFJiGv4WwTYbWYgPedmmI9bFw8CGI3mwOAwWgUKeX50c1BlBDT7ai3jcpqNM/exec";
 
 export async function POST(req: Request) {
   try {
