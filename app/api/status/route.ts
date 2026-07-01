@@ -9,9 +9,9 @@ const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 const GUILDS_INFO = [
   { id: 'SEONGTAE', name: '태산', sheetName: '태산' },
   { id: 'MANSIK', name: '만월', sheetName: '만월' },
-  { id: 'OAH', name: '오아 길드', sheetName: '아랑' },
+  { id: 'OAH', name: '아랑', sheetName: '아랑' },
   { id: 'SOOPI', name: '하북펭가', sheetName: '하북펭가' },
-  { id: 'CEOPARK', name: '사장 길드', sheetName: '천박' },
+  { id: 'CEOPARK', name: '천박', sheetName: '천박' },
   { id: 'DOHYUN', name: '도황', sheetName: '도황' }
 ];
 
