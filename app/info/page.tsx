@@ -2,6 +2,7 @@
 import Link from 'next/link';
 
 export default function InfoHubPage() {
+  // 💡 패치노트와 API 목록을 삭제하고 3개만 남겼습니다!
   const infoMenus = [
     {
       title: '👥 신청자 명단',
@@ -14,18 +15,6 @@ export default function InfoHubPage() {
       desc: '회차별 주요 이벤트 및 서버 스케줄표',
       href: '/schedule',
       color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
-    },
-    {
-      title: '📝 패치노트',
-      desc: '날짜별 서버 업데이트 및 버그 수정 내역',
-      href: '/patchnote',
-      color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800',
-    },
-    {
-      title: '🎁 API 목록',
-      desc: '별풍선 티켓, 지원상자 등 후원 혜택 보상표 안내',
-      href: '/api-list',
-      color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
     },
     {
       title: '💊 영단 정보',
@@ -44,18 +33,19 @@ export default function InfoHubPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 content-start">
+      {/* 💡 메뉴가 3개이므로 lg:grid-cols-3을 추가해 PC 화면에서 가로로 3개가 꽉 차게 예쁘게 정렬됩니다. */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 flex-1 content-start">
         {infoMenus.map((menu, idx) => (
           <Link
             key={idx}
             href={menu.href}
-            className={`group flex flex-col p-6 rounded-2xl border transition-all hover:-translate-y-1 hover:shadow-md ${menu.color}`}
+            className={`group flex flex-col p-6 rounded-3xl border transition-all hover:-translate-y-1 hover:shadow-lg ${menu.color}`}
           >
-            <h2 className="text-xl font-black mb-2 flex items-center justify-between">
+            <h2 className="text-xl font-black mb-3 flex items-center justify-between">
               {menu.title}
               <span className="opacity-0 group-hover:opacity-100 transition-opacity text-xl">→</span>
             </h2>
-            <p className="text-sm font-medium opacity-80">{menu.desc}</p>
+            <p className="text-sm font-bold opacity-80 leading-relaxed">{menu.desc}</p>
           </Link>
         ))}
       </div>

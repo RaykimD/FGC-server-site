@@ -95,9 +95,6 @@ export default function RootLayout({
                 <Link href="/job-maker" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
                   👥 길드 직업 예측
                 </Link>
-                <Link href="/multiview" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
-                  📺 커스텀 멀티뷰
-                </Link>
                 <Link href="/collection" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all mb-6">
                   🃏 스트리머 덱 메이커
                 </Link>
