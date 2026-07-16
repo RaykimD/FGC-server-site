@@ -1,25 +1,44 @@
 'use client';
 import React from 'react';
 
-// 💡 나중에 일정이 추가되면 이 배열에 계속 내용만 추가해주시면 알아서 화면에 예쁘게 그려집니다!
+// 💡 요약(title)을 모두 제거하고, 16일은 지나간 일정(true), 17일을 최신(false)으로 설정했습니다!
 const SCHEDULE_DATA = [
   {
     date: '7월 14일',
     day: '화',
-    title: '🎉 서버 오픈',
     items: ['내수서버 정식 오픈'],
-    isPast: true, // 지나간 일정은 true로 하면 색상이 약간 연해집니다.
+    isPast: true, 
   },
   {
     date: '7월 15일',
     day: '수',
-    title: '⚔️ 2차 전직 및 신규 시스템',
     items: [
       '쥐 보스 등장',
       '2차 전직',
       '초월자 천살성 추가'
     ],
-    isPast: false, // 오늘이거나 다가올 일정은 돋보이게 처리됩니다.
+    isPast: true,
+  },
+  {
+    date: '7월 16일',
+    day: '목',
+    items: [
+      '산삼보스 등장',
+      '경공비급(마나코어) 추가',
+      '초월자 뇌신 추가',
+      '배 추가'
+    ],
+    isPast: true, // 16일 안 빛나게 처리
+  },
+  {
+    date: '7월 17일',
+    day: '금',
+    items: [
+      '오공보스 추가 (6시간 단위 젠)',
+      '3차전직 추가',
+      '상선 등장'
+    ],
+    isPast: false, // 17일만 빛나게 강조 처리
   }
 ];
 
@@ -61,9 +80,7 @@ export default function SchedulePage() {
 
               {/* 내용 카드 영역 */}
               <div className={`flex-1 bg-white dark:bg-[#1a1a1a] p-6 rounded-3xl border shadow-sm transition-all ${schedule.isPast ? 'border-slate-200 dark:border-gray-800 bg-slate-50/50' : 'border-emerald-200 dark:border-emerald-900/50 shadow-emerald-900/5'}`}>
-                <h3 className={`text-xl font-black mb-4 ${schedule.isPast ? 'text-slate-700 dark:text-gray-300' : 'text-slate-900 dark:text-white'}`}>
-                  {schedule.title}
-                </h3>
+                {/* 💡 타이틀(h3)을 삭제하여 내용만 심플하게 남겼습니다. */}
                 <ul className="space-y-3">
                   {schedule.items.map((item, itemIdx) => (
                     <li key={itemIdx} className="flex items-start gap-3">
