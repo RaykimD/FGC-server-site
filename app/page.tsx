@@ -3,7 +3,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center h-[calc(100%-100px)]">
       <div className="text-center max-w-2xl w-full">
         <div className="inline-block px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold mb-6">
-          v1.0 업데이트 완료
+          v2.0 업데이트 완료
         </div>
         
         <h1 className="text-5xl font-black text-gray-900 dark:text-white mb-6 tracking-tight leading-tight">
@@ -13,9 +13,24 @@ export default function Home() {
           </span>
         </h1>
         
-        <p className="text-lg font-medium text-gray-500 dark:text-gray-400 mb-12">
+        <p className="text-lg font-medium text-gray-500 dark:text-gray-400 mb-8">
           왼쪽 메뉴에서 원하는 메뉴를 선택하여<br/>서버 정보 및 강화 및 제작 시뮬레이션을 볼 수 있습니다.
         </p>
+
+        {/* 📢 메인 화면 대형 공지사항 */}
+        <div className="text-left bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-800/60 rounded-3xl p-5 sm:p-6 mb-8 shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 hover:shadow-md transition-shadow animate-fade-in">
+          <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center text-2xl shrink-0 border border-blue-100 dark:border-gray-700">
+            📝
+          </div>
+          <div className="flex-1">
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1">
+              태산, 천박 길드 세부스탯 정보 제공자를 찾습니다!
+            </h2>
+            <p className="text-sm font-bold text-slate-600 dark:text-gray-300">
+              해당 길드의 스탯 작성에 도움을 주실 수 있는 분은 SOOP 라인업 아이디 <span className="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-black border border-blue-200 dark:border-blue-800/80 shadow-sm mx-0.5">ldh09191</span> 로 쪽지 부탁드립니다.
+            </p>
+          </div>
+        </div>
 
         <div className="p-6 rounded-2xl bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-gray-800 shadow-sm dark:shadow-none inline-block">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-300">

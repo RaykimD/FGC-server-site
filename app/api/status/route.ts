@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
 
-// 💡 넥스트JS의 라우트 캐싱을 강제로 끄고 최신 코드를 반영시키는 마법의 코드
 export const dynamic = 'force-dynamic';
 
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
 
-// 👇 방장님이 원하셨던 길드명으로 완벽하게 세팅해 두었습니다!
 const GUILDS_INFO = [
   { id: 'SEONGTAE', name: '태산', sheetName: '태산' },
   { id: 'MANSIK', name: '만월', sheetName: '만월' },
@@ -40,7 +38,6 @@ export async function GET() {
     const allGuildsData = await Promise.all(GUILDS_INFO.map(async (guild) => {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
-      // 구글 시트 통신은 10분(600초) 캐싱 유지 -> 서버 렉 방지
       const res = await fetch(url, { next: { revalidate: 600 } });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
@@ -48,7 +45,16 @@ export async function GET() {
       let headerRowIndex = -1;
       let nameColIndex = -1;
       const rawMembers = [];
-      const tools = { pickaxe3: '0', pickaxe4: '0', pickaxe5: '0' };
+      
+      // 💡 3강, 4강 삭제하고 5강만 남김
+      const tools = { pickaxe5: '0' }; 
+
+      // 💡 Y4 셀의 값 강제 추출 (Y열 = 25번째 알파벳 = 인덱스 24 / 4행 = 인덱스 3)
+      if (rows.length > 3) {
+        const row4Cols = parseCSVRow(rows[3] || '');
+        const y4Value = row4Cols[24] ? row4Cols[24].trim() : '0';
+        tools.pickaxe5 = y4Value === '' ? '0' : y4Value;
+      }
 
       for (let i = 0; i < rows.length; i++) {
         if (!rows[i].trim()) continue;
@@ -60,13 +66,6 @@ export async function GET() {
             headerRowIndex = i;
             nameColIndex = idx;
           }
-        }
-
-        for (let j = 0; j < cols.length - 1; j++) {
-          const val = cols[j].replace(/\s+/g, '');
-          if (val.includes('3강곡')) tools.pickaxe3 = cols[j + 1] || '0';
-          if (val.includes('4강곡')) tools.pickaxe4 = cols[j + 1] || '0';
-          if (val.includes('5강곡')) tools.pickaxe5 = cols[j + 1] || '0';
         }
       }
 
@@ -80,8 +79,6 @@ export async function GET() {
         if (!name || name === '') continue;
 
         const roleValue = cols[3] && cols[3].trim() !== '' ? cols[3].trim() : '길드원';
-        
-        // 💡 핵심: 백틱과 홑따옴표를 강제로 지워주는 클린 작업 (15234 아이디 오류 해결)
         const rawId = cols[targetCol + 1] || '';
         const cleanId = rawId.replace(/[`']/g, '').trim();
 

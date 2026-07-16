@@ -46,7 +46,7 @@ export default function RootLayout({
                   ℹ️ 서버 종합 정보
                 </Link>
                 <Link href="/status" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
-                  📊 길드/직업 현황
+                  📊 각 길드별 현황
                 </Link>
                 <Link href="/boss" className="block px-4 py-2.5 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 hover:text-blue-500 dark:hover:text-blue-400 transition-all">
                   👹 보스타임
