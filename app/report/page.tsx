@@ -32,6 +32,9 @@ const REPORT_CATEGORIES = [
   { id: 'boss', name: '보스 루팅 제보' },
 ];
 
+// 💡 보스 리스트를 하드코딩으로 고정했습니다!
+const BOSS_LIST = ['쥐보스', '산삼보스', '오공보스(루팅)', '오공보스(귀속)'];
+
 const getTodayStr = () => {
   const d = new Date();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -58,7 +61,6 @@ const formatDisplayValue = (val: string) => {
 
 export default function ReportPage() {
   const [guilds, setGuilds] = useState<GuildData[]>([]);
-  const [bosses, setBosses] = useState<string[]>([]);
   const [guildMap, setGuildMap] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -119,7 +121,7 @@ export default function ReportPage() {
 
         if (optionsRes && optionsRes.ok) {
           const optionsJson = await optionsRes.json();
-          if (optionsJson.bosses) setBosses(optionsJson.bosses);
+          // 💡 API에서 불러오던 보스 목록 덮어쓰기 로직 삭제 완료!
           if (optionsJson.guildMap) {
             setGuildMap(optionsJson.guildMap);
             const availableGuilds = Object.keys(optionsJson.guildMap);
@@ -127,7 +129,6 @@ export default function ReportPage() {
               setBossGuild(availableGuilds[0]);
             }
           }
-          if (optionsJson.bosses?.length > 0) setBossType(optionsJson.bosses[0]);
         }
       } catch (e) {
         console.error(e);
@@ -378,9 +379,10 @@ export default function ReportPage() {
                <div className="grid grid-cols-2 gap-4">
                  <div>
                    <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">보스 종류</label>
+                   {/* 💡 하드코딩된 BOSS_LIST를 사용하도록 변경! */}
                    <select value={bossType} onChange={(e) => setBossType(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
                      <option value="">선택하세요</option>
-                     {bosses.map((b, idx) => <option key={idx} value={b}>{b}</option>)}
+                     {BOSS_LIST.map((b, idx) => <option key={idx} value={b}>{b}</option>)}
                    </select>
                  </div>
                  <div>
