@@ -6,6 +6,15 @@ interface BossLog { id: number; date: string; time: string; bossName: string; gu
 
 type TabType = '일간현황' | '누적통계' | '루팅랭킹' | '도감';
 
+// 💡 현황판에 표시할 4개의 고정 보스 (다른 보스는 무시됨)
+const TARGET_BOSSES = ['쥐', '산삼', '오공(귀속)', '오공(루팅)'];
+const DEFAULT_BOSS_DICT: BossData[] = [
+  { name: '쥐', hp: '알 수 없음', img: '🐭', drops: ['미상'] },
+  { name: '산삼', hp: '알 수 없음', img: '🌿', drops: ['미상'] },
+  { name: '오공(귀속)', hp: '알 수 없음', img: '🐵', drops: ['미상'] },
+  { name: '오공(루팅)', hp: '알 수 없음', img: '🐒', drops: ['미상'] },
+];
+
 const getTodayStr = () => {
   const d = new Date();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -29,8 +38,28 @@ export default function BossTimePage() {
         const res = await fetch('/api/boss');
         if (!res.ok) throw new Error('Network error');
         const data = await res.json();
-        setBossDictionary(data.dictionary || []);
-        setLogs(data.logs || []);
+        
+        // 1. 도감 정리: 스프레드시트 데이터와 기본값 병합 (설호, 코끼리 등은 제외됨)
+        const apiDict: BossData[] = data.dictionary || [];
+        const mergedDict = DEFAULT_BOSS_DICT.map(def => {
+          // 시트에 쥐보스 등 예전 이름으로 기록되어 있을 가능성 대비 포괄적 매칭
+          const match = apiDict.find(b => b.name.includes(def.name.replace('(귀속)', '').replace('(루팅)', '')));
+          return match ? { ...def, hp: match.hp || def.hp, drops: match.drops?.length ? match.drops : def.drops } : def;
+        });
+        setBossDictionary(mergedDict);
+
+        // 2. 로그 정리: 옛날 데이터(쥐보스, 산삼보스) 이름 자동 통일 & 불필요 보스(설호, 코끼리 등) 자동 필터링
+        const rawLogs: BossLog[] = data.logs || [];
+        const fixedLogs = rawLogs.map(log => {
+          let bName = log.bossName;
+          if (bName.includes('쥐')) bName = '쥐';
+          else if (bName.includes('산삼')) bName = '산삼';
+          else if (bName.includes('오공') && bName.includes('귀속')) bName = '오공(귀속)';
+          else if (bName.includes('오공') && bName.includes('루팅')) bName = '오공(루팅)';
+          return { ...log, bossName: bName };
+        }).filter(log => TARGET_BOSSES.includes(log.bossName));
+        
+        setLogs(fixedLogs);
       } catch (error) {
         console.error('Fetch error:', error);
       } finally {
@@ -405,7 +434,6 @@ export default function BossTimePage() {
                 </div>
               </div>
             ))}
-            {bossDictionary.length === 0 && <div className="text-slate-500 text-sm font-bold text-center mt-10 w-full">구글 시트의 Boss_Dictionary 탭에 데이터를 추가하시면 실시간 도감이 채워집니다.</div>}
           </div>
         )}
 

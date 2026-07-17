@@ -32,8 +32,8 @@ const REPORT_CATEGORIES = [
   { id: 'boss', name: '보스 루팅 제보' },
 ];
 
-// 💡 보스 리스트를 하드코딩으로 고정했습니다!
-const BOSS_LIST = ['쥐보스', '산삼보스', '오공보스(루팅)', '오공보스(귀속)'];
+// 💡 DB에 저장될 정확한 4개의 보스 이름으로 수정 완료!
+const BOSS_LIST = ['쥐', '산삼', '오공(귀속)', '오공(루팅)'];
 
 const getTodayStr = () => {
   const d = new Date();
@@ -121,7 +121,6 @@ export default function ReportPage() {
 
         if (optionsRes && optionsRes.ok) {
           const optionsJson = await optionsRes.json();
-          // 💡 API에서 불러오던 보스 목록 덮어쓰기 로직 삭제 완료!
           if (optionsJson.guildMap) {
             setGuildMap(optionsJson.guildMap);
             const availableGuilds = Object.keys(optionsJson.guildMap);
@@ -278,7 +277,6 @@ export default function ReportPage() {
             {reports.length > 0 ? reports.map((report) => (
               <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-[#121212] border border-slate-100 dark:border-gray-800 gap-4">
                 
-                {/* 💡 보스 제보일 때의 특수 UI 디자인 (화살표 제거, 루팅유저 추가) */}
                 {report.categoryName === '보스 루팅 제보' || report.categoryName === 'boss' ? (
                   <>
                     <div>
@@ -293,7 +291,6 @@ export default function ReportPage() {
                     </div>
                   </>
                 ) : (
-                  /* 기존 인게임 스탯 제보 UI */
                   <>
                     <div>
                       <p className="text-xs font-bold text-slate-500 dark:text-gray-400 mb-0.5">[{report.guildName}] {report.memberName}</p>
@@ -379,7 +376,6 @@ export default function ReportPage() {
                <div className="grid grid-cols-2 gap-4">
                  <div>
                    <label className="block text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">보스 종류</label>
-                   {/* 💡 하드코딩된 BOSS_LIST를 사용하도록 변경! */}
                    <select value={bossType} onChange={(e) => setBossType(e.target.value)} required className="w-full bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-gray-700 text-slate-800 dark:text-white rounded-xl p-3 text-sm font-bold outline-none">
                      <option value="">선택하세요</option>
                      {BOSS_LIST.map((b, idx) => <option key={idx} value={b}>{b}</option>)}
