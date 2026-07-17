@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+// 💡 넥스트JS 캐시 강제 무효화! (방장님이 추가하신 아주 훌륭한 코드입니다)
 export const dynamic = 'force-dynamic';
 
 const SHEET_ID = '1SUL7ZjnZxTt93Mgk6edzS4kVHlFYABND9GL_q624gAU';
@@ -22,7 +23,7 @@ async function getSoopLiveStatus(bjId: string) {
   try {
     const res = await fetch(`https://bjapi.afreecatv.com/api/${bjId}/station`, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
-      next: { revalidate: 600 } 
+      next: { revalidate: 60 } // 💡 아프리카 API는 60초 유지 (과부하/차단 방지용)
     });
     if (!res.ok) return { isLive: false, viewers: 0 };
     const json = await res.json();
@@ -38,7 +39,8 @@ export async function GET() {
     const allGuildsData = await Promise.all(GUILDS_INFO.map(async (guild) => {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(guild.sheetName)}`;
       
-      const res = await fetch(url, { next: { revalidate: 600 } });
+      // 💡 해결! 빈칸이던 곳에 '10'을 넣었습니다. (10초마다 시트 최신화)
+      const res = await fetch(url, { next: { revalidate: 10 } });
       const csvText = await res.text();
       const rows = csvText.replace(/\r/g, '').split('\n');
 
@@ -46,10 +48,8 @@ export async function GET() {
       let nameColIndex = -1;
       const rawMembers = [];
       
-      // 💡 3강, 4강 삭제하고 5강만 남김
       const tools = { pickaxe5: '0' }; 
 
-      // 💡 Y4 셀의 값 강제 추출 (Y열 = 25번째 알파벳 = 인덱스 24 / 4행 = 인덱스 3)
       if (rows.length > 3) {
         const row4Cols = parseCSVRow(rows[3] || '');
         const y4Value = row4Cols[24] ? row4Cols[24].trim() : '0';
