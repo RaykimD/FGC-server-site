@@ -32,8 +32,8 @@ const REPORT_CATEGORIES = [
   { id: 'boss', name: '보스 루팅 제보' },
 ];
 
-// 💡 DB에 저장될 정확한 4개의 보스 이름으로 수정 완료!
-const BOSS_LIST = ['쥐', '산삼', '오공(귀속)', '오공(루팅)'];
+// 💡 새로운 보스 '검성' 추가!
+const BOSS_LIST = ['쥐', '산삼', '오공(귀속)', '오공(루팅)', '검성'];
 
 const getTodayStr = () => {
   const d = new Date();
