@@ -6,14 +6,16 @@ interface BossLog { id: number; date: string; time: string; bossName: string; gu
 
 type TabType = '일간현황' | '누적통계' | '루팅랭킹' | '도감';
 
-// 💡 검성 추가!
-const TARGET_BOSSES = ['쥐', '산삼', '오공(귀속)', '오공(루팅)', '검성'];
+// 💡 설호(루팅), 설호(귀속) 추가 완료!
+const TARGET_BOSSES = ['쥐', '산삼', '오공(귀속)', '오공(루팅)', '검성', '설호(귀속)', '설호(루팅)'];
 const DEFAULT_BOSS_DICT: BossData[] = [
   { name: '쥐', hp: '알 수 없음', img: '🐭', drops: ['미상'] },
   { name: '산삼', hp: '알 수 없음', img: '🌿', drops: ['미상'] },
   { name: '오공(귀속)', hp: '알 수 없음', img: '🐵', drops: ['미상'] },
   { name: '오공(루팅)', hp: '알 수 없음', img: '🐒', drops: ['미상'] },
   { name: '검성', hp: '알 수 없음', img: '🗡️', drops: ['미상'] },
+  { name: '설호(루팅)', hp: '알 수 없음', img: '🐯', drops: ['미상'] },
+  { name: '설호(귀속)', hp: '알 수 없음', img: '🐅', drops: ['미상'] },
 ];
 
 const getTodayStr = () => {
@@ -54,7 +56,9 @@ export default function BossTimePage() {
           else if (bName.includes('산삼')) bName = '산삼';
           else if (bName.includes('오공') && bName.includes('귀속')) bName = '오공(귀속)';
           else if (bName.includes('오공') && bName.includes('루팅')) bName = '오공(루팅)';
-          else if (bName.includes('검성')) bName = '검성'; // 💡 검성 변환 로직 추가
+          else if (bName.includes('검성')) bName = '검성';
+          else if (bName.includes('설호') && bName.includes('루팅')) bName = '설호(루팅)'; // 💡 설호 루팅 매핑
+          else if (bName.includes('설호') && bName.includes('귀속')) bName = '설호(귀속)'; // 💡 설호 귀속 매핑
           return { ...log, bossName: bName };
         }).filter(log => TARGET_BOSSES.includes(log.bossName));
         

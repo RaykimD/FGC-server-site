@@ -32,8 +32,8 @@ const REPORT_CATEGORIES = [
   { id: 'boss', name: '보스 루팅 제보' },
 ];
 
-// 💡 새로운 보스 '검성' 추가!
-const BOSS_LIST = ['쥐', '산삼', '오공(귀속)', '오공(루팅)', '검성'];
+// 💡 설호(루팅), 설호(귀속) 추가 완료!
+const BOSS_LIST = ['쥐', '산삼', '오공(귀속)', '오공(루팅)', '검성', '설호(귀속)', '설호(루팅)'];
 
 const getTodayStr = () => {
   const d = new Date();
